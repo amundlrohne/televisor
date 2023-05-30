@@ -1,0 +1,3 @@
+[submodule "backend/jaeger-idl"]
+	path = backend/jaeger-idl
+	url = git@github.com:jaegertracing/jaeger-idl.git
