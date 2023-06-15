@@ -12,6 +12,9 @@ var (
 
 func main() {
 	queries.PrometheusContainerCPU()
+	queries.PrometheusContainerMemory()
+	queries.PrometheusContainerNetworkInput()
+	queries.PrometheusContainerNetworkOutput()
 
 	/* flag.Parse()
 	// Set up a connection to the Jaeger Server.

@@ -62,7 +62,7 @@ func PrometheusContainerNetworkOutput() models.PrometheusAPIResponse {
 }
 
 func PrometheusContainerNetworkInput() models.PrometheusAPIResponse {
-	const query = `sum by(name) (podman_container_info{name!~".+infra"} * on(id) group_right(name) rate(podman_container_net_input_total[15s]]) / 1024)`
+	const query = `sum by(name) (podman_container_info{name!~".+infra"} * on(id) group_right(name) rate(podman_container_net_input_total[15s]) / 1024)`
 	response := prometheusQuery(query)
 
 	var promResult models.PrometheusAPIResponse
