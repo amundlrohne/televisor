@@ -49,3 +49,25 @@ func PrometheusContainerMemory() models.PrometheusAPIResponse {
 	fmt.Printf("client: response body: %+v\n", promResult)
 	return promResult
 }
+
+func PrometheusContainerNetworkOutput() models.PrometheusAPIResponse {
+	const query = `sum by(name) (podman_container_info{name!~".+infra"} * on(id) group_right(name) rate(podman_container_net_output_total[15]) / 1024)`
+	response := prometheusQuery(query)
+
+	var promResult models.PrometheusAPIResponse
+	json.Unmarshal(response, &promResult)
+
+	fmt.Printf("client: response body: %+v\n", promResult)
+	return promResult
+}
+
+func PrometheusContainerNetworkInput() models.PrometheusAPIResponse {
+	const query = `sum by(name) (podman_container_info{name!~".+infra"} * on(id) group_right(name) rate(podman_container_net_input_total[15]]) / 1024)`
+	response := prometheusQuery(query)
+
+	var promResult models.PrometheusAPIResponse
+	json.Unmarshal(response, &promResult)
+
+	fmt.Printf("client: response body: %+v\n", promResult)
+	return promResult
+}
