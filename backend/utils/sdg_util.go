@@ -22,3 +22,7 @@ func ExtractServicesFromSDG(sdg []model.DependencyLink) map[string]*models.Exten
 
 	return services
 }
+
+func CPUUtilizationToSDG(data models.PrometheusAPIResponse) {
+
+}

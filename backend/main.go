@@ -2,15 +2,7 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"os"
 
-	pb "jaeger-idl/api_v2"
-
-	"github.com/amundlrohne/televisor/connectors"
 	"github.com/amundlrohne/televisor/queries"
 )
 
@@ -19,7 +11,9 @@ var (
 )
 
 func main() {
-	flag.Parse()
+	queries.PrometheusContainerCPU()
+
+	/* flag.Parse()
 	// Set up a connection to the Jaeger Server.
 	conn := connectors.JaegerConnect(*jaeger_addr)
 	defer conn.Close()
@@ -42,7 +36,7 @@ func main() {
 		fmt.Printf("client: could not read response body: %s\n", err)
 		os.Exit(1)
 	}
-	fmt.Printf("client: response body: %s\n", resBody)
+	fmt.Printf("client: response body: %s\n", resBody) */
 
 }
 
