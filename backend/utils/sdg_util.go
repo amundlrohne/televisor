@@ -23,6 +23,11 @@ func ExtractServicesFromSDG(sdg []model.DependencyLink) map[string]*models.Exten
 	return services
 }
 
-func CPUUtilizationToSDG(data models.PrometheusAPIResponse) {
-
+func CPUUtilizationToSDG(data models.PrometheusAPIResponse, sdg map[string]*models.ExtendedService) {
+	for _, d := range data.Data.Result {
+		if service, ok := sdg[d.Metric.Name]; ok {
+			service.Cpu.P99 = d.Value[1].(float64) // Needs testing
+			sdg[d.Metric.Name] = service
+		}
+	}
 }
