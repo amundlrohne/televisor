@@ -25,3 +25,15 @@ type ExtendedService struct {
 type Utiliziation struct {
 	P99 float64
 }
+
+type TelevisorService struct {
+	Name       string
+	Operations []string
+	//Traces        map[OperationName][]model.Span
+	Relationships map[string]TelevisorRelationship
+}
+
+type TelevisorRelationship struct {
+	Count       int
+	ServiceName string
+}
