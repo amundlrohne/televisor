@@ -24,3 +24,5 @@ type PromtheusVectorResult struct {
 type PrometheusVectorResultMetric struct {
 	Name string `json:"name"`
 }
+
+type PrometheusContainerMetric map[string]string

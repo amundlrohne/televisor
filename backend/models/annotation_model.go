@@ -3,11 +3,15 @@ package models
 type AnnotationType string
 
 const (
-	Criticality AnnotationType = "CRITICALITY"
-	Dependence  AnnotationType = "DEPENDENCE"
-	Megaservice AnnotationType = "MEGASERVICE"
-	Greedy      AnnotationType = "GREEDY"
-	Cyclic      AnnotationType = "CYCLIC"
+	Criticality            AnnotationType = "CRITICALITY"
+	Dependence             AnnotationType = "DEPENDENCE"
+	Megaservice            AnnotationType = "MEGASERVICE"
+	Greedy                 AnnotationType = "GREEDY"
+	Cyclic                 AnnotationType = "CYCLIC"
+	OverUtilizationCPU     AnnotationType = "OVER_UTILIZATION_CPU"
+	UnderUtilizationCPU    AnnotationType = "UNDER_UTILIZATION_CPU"
+	OverUtilizationMemory  AnnotationType = "OVER_UTILIZATION_MEMORY"
+	UnderUtilizationMemory AnnotationType = "UNDER_UTILIZATION_MEMORY"
 )
 
 type YChartLevel string
@@ -19,9 +23,9 @@ const (
 )
 
 type Annotation struct {
-	Services       []string
-	Operations     []string
-	Message        string
-	AnnotationType AnnotationType
-	YChartLevel    YChartLevel
+	Services       []string       `json:"services"`
+	Operations     []string       `json:"operations"`
+	Message        string         `json:"message"`
+	AnnotationType AnnotationType `json:"annotationType"`
+	YChartLevel    YChartLevel    `json:"yChartLevel"`
 }

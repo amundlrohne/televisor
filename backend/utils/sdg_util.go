@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"strconv"
 
 	pb "jaeger-idl/api_v2"
 
@@ -133,4 +134,30 @@ func getRootSpan(traces []model.Span) (model.Span, error) {
 	}
 
 	return model.Span{}, errors.New("can't find root span")
+}
+
+func AddCPUToServices(services map[string]models.ExtendedService, cpuData models.PrometheusContainerMetric) map[string]models.ExtendedService {
+	for serviceKey, s := range services {
+		for metricKey, m := range cpuData {
+			if s.IsServiceInContainer(metricKey) {
+				utilization, _ := strconv.ParseFloat(m, 64)
+				s.Cpu.P99 = utilization
+				services[serviceKey] = s
+			}
+		}
+	}
+	return services
+}
+
+func AddMemoryToServices(services map[string]models.ExtendedService, memoryData models.PrometheusContainerMetric) map[string]models.ExtendedService {
+	for serviceKey, s := range services {
+		for metricKey, m := range memoryData {
+			if s.IsServiceInContainer(metricKey) {
+				utilization, _ := strconv.ParseFloat(m, 64)
+				s.Memory.P99 = utilization
+				services[serviceKey] = s
+			}
+		}
+	}
+	return services
 }
