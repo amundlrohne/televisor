@@ -1,16 +1,13 @@
 package annotators
 
 import (
+	"fmt"
 	"sort"
 
 	"github.com/amundlrohne/televisor/models"
-	"github.com/amundlrohne/televisor/utils"
-	"github.com/jaegertracing/jaeger/model"
 )
 
-func AbsoluteCriticalService(sdg []model.DependencyLink) models.Annotation {
-	var services = utils.ExtractServicesFromSDG(sdg)
-
+func AbsoluteCriticalService(services map[string]models.ExtendedService) models.Annotation {
 	keys := make([]string, 0, len(services))
 
 	for key := range services {
@@ -21,21 +18,12 @@ func AbsoluteCriticalService(sdg []model.DependencyLink) models.Annotation {
 		return len(services[keys[i]].Dependencies)*len(services[keys[i]].Dependents) < len(services[keys[j]].Dependencies)*len(services[keys[j]].Dependents)
 	})
 
-	return models.Annotation{Services: []string{keys[len(keys)-1]}, AnnotationType: models.Criticality}
-}
+	criticalService := services[keys[len(keys)-1]]
 
-func AbsoluteDependenceService(sdg []model.DependencyLink) models.Annotation {
-	var services = utils.ExtractServicesFromSDG(sdg)
-
-	keys := make([]string, 0, len(services))
-
-	for key := range services {
-		keys = append(keys, key)
+	return models.Annotation{
+		Services:       []string{criticalService.Name},
+		AnnotationType: models.Criticality,
+		YChartLevel:    models.ServiceLevel,
+		Message:        fmt.Sprintf("Service %s has %v dependents and %v dependencies", criticalService.Name, len(criticalService.Dependents), len(criticalService.Dependencies)),
 	}
-
-	sort.SliceStable(keys, func(i, j int) bool {
-		return len(services[keys[i]].Dependencies) < len(services[keys[j]].Dependencies)
-	})
-
-	return models.Annotation{Services: []string{keys[len(keys)-1]}, AnnotationType: models.Criticality}
 }

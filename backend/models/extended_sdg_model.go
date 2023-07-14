@@ -1,6 +1,7 @@
 package models
 
 import (
+	"regexp"
 	"time"
 
 	"github.com/jaegertracing/jaeger/model"
@@ -24,6 +25,14 @@ type ExtendedService struct {
 
 type Utiliziation struct {
 	P99 float64
+}
+
+func (service ExtendedService) IsServiceInContainer(containerName string) bool {
+	serviceName := service.Name
+
+	match, _ := regexp.MatchString(serviceName, containerName)
+
+	return match
 }
 
 type TelevisorService struct {

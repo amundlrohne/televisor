@@ -2,6 +2,8 @@ package queries
 
 import (
 	"context"
+	"encoding/json"
+	"io"
 	"log"
 	"time"
 
@@ -57,33 +59,54 @@ func JaegerOperations(qsc pb.QueryServiceClient, service string) []string {
 }
 
 func JaegerTraces(qsc pb.QueryServiceClient, service string, operation string) []model.Span {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
 
-	request := &pb.FindTracesRequest{Query: &pb.TraceQueryParameters{ServiceName: "nginx-web-server", OperationName: "/wrk2-api/post/compose", SearchDepth: 0}}
+	request := &pb.FindTracesRequest{Query: &pb.TraceQueryParameters{
+		ServiceName:   service,
+		OperationName: operation,
+		StartTimeMin:  time.Now().Add(-time.Hour * 24),
+		StartTimeMax:  time.Now(),
+		DurationMin:   time.Duration(0),
+		DurationMax:   time.Hour,
+		SearchDepth:   1,
+	}}
 
-	client, err := qsc.FindTraces(ctx, request)
+	stream, err := qsc.FindTraces(ctx, request)
 
 	if err != nil {
-		log.Fatalf("could not get traces: %v", err)
+		log.Fatalf("could not get stream: %v", err)
 	}
 
-	r, err := client.Recv()
+	var result []model.Span
 
-	if err != nil {
-		log.Fatalf("query failed: %v", err)
+	for {
+		spans, err := stream.Recv()
+
+		if err == io.EOF {
+			return result
+		} else if err == nil {
+			result = append(result, spans.Spans...)
+		}
+
+		if err != nil {
+			log.Fatalf("stream failed: %v", err)
+			return []model.Span{}
+		}
 	}
-
-	return r.Spans
 }
 
 func JaegerTrace(qsc pb.QueryServiceClient, traceId model.TraceID) []model.Span {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
 
 	request := &pb.GetTraceRequest{TraceID: traceId}
 
-	client, err := qsc.GetTrace(ctx, request)
+	jsonRequest, _ := json.Marshal(request)
+
+	var newRequest pb.GetTraceRequest
+	json.Unmarshal(jsonRequest, &newRequest)
+	client, err := qsc.GetTrace(ctx, &newRequest)
 
 	if err != nil {
 		log.Fatalf("Trace doesn't exist: %v", err)

@@ -28,6 +28,7 @@ func prometheusQuery(query string) []byte {
 }
 
 func PrometheusContainerCPU() models.PrometheusAPIResponse {
+	//  sum by (name) (rate(container_cpu_usage_seconds_total[30s]) * 100)
 	const query = `sum by(name) (podman_container_info{name!~".+infra"} * on(id) group_right(name) rate(podman_container_cpu_seconds_total[15s]))`
 
 	response := prometheusQuery(query)
@@ -40,6 +41,7 @@ func PrometheusContainerCPU() models.PrometheusAPIResponse {
 }
 
 func PrometheusContainerMemory() models.PrometheusAPIResponse {
+	// sum by (name) ((container_memory_usage_bytes / on() group_left() machine_memory_bytes) * 100)
 	const query = `sum by(name) (podman_container_info{name!~".+infra"} * on(id) group_right(name) podman_container_mem_usage_bytes / 1024 /100)`
 	response := prometheusQuery(query)
 

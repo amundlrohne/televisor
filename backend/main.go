@@ -6,16 +6,21 @@ import (
 
 	pb "jaeger-idl/api_v2"
 
+	"github.com/amundlrohne/televisor/annotators"
 	"github.com/amundlrohne/televisor/connectors"
-	"github.com/amundlrohne/televisor/models"
-	"github.com/amundlrohne/televisor/queries"
+	"github.com/amundlrohne/televisor/utils"
 )
 
 var (
 	jaeger_addr = flag.String("jaeger_addr", "localhost:16685", "jaeger address to connect to")
+	api_gateway = flag.String("api_gateway", "nginx-web-server", "api gateway in microservice application")
 )
 
 func main() {
+	analyze()
+}
+
+func analyze() {
 	//queries.PrometheusContainerCPU()
 	//queries.PrometheusContainerMemory()
 	//queries.PrometheusContainerNetworkInput()
@@ -33,34 +38,27 @@ func main() {
 	log.Printf("Operations: %v", queries.JaegerOperations(qsc, "nginx-web-server"))
 	log.Printf("Traces: %+v", queries.JaegerTraces(qsc)) */
 
-	var sdg = make(map[string]models.TelevisorService)
+	operations := utils.GetSubSDGs(qsc, *api_gateway)
+	combinedEdges := operations.CombineEdges()
+	services := utils.ExtractServicesFromSDG(combinedEdges)
 
-	services := queries.JaegerServices(qsc)
+	megaservices := annotators.MegaserviceAnnotator(operations)
+	fmt.Printf("Megaservices: %+v \n", megaservices)
 
-	for _, s := range services {
-		operations := queries.JaegerOperations(qsc, s)
-		relationships := make(map[string]models.TelevisorRelationship)
-		for _, o := range operations {
-			traces := queries.JaegerTraces(qsc, s, o)
-			for _, t := range traces {
-				if relationship, ok := relationships[t.OperationName]; ok {
-					relationship.Count++
-					relationships[t.OperationName] = relationship
-				} else {
-					relationship := models.TelevisorRelationship{
-						Count:       1,
-						ServiceName: t.Process.ServiceName,
-					}
-					relationships[t.OperationName] = relationship
-				}
-			}
-		}
+	greedy := annotators.GreedyServiceAnnotator(operations)
+	fmt.Printf("Greedy: %+v \n", greedy)
 
-		service := models.TelevisorService{Name: s, Operations: operations, Relationships: relationships}
-		sdg[s] = service
-	}
+	criticality := annotators.AbsoluteCriticalService(services)
+	fmt.Printf("Criticality %+v \n", criticality)
 
-	fmt.Printf("Services: %+v", sdg["nginx-web-server"])
+	dependence := annotators.AbsoluteDependenceService(services)
+	fmt.Printf("Dependence %+v \n", dependence)
+
+	cycles := annotators.CyclicDependencyAnnotator(operations, services)
+	fmt.Printf("Cycles %+v \n", cycles)
+
+	//fmt.Printf("Connected: %+v", operations["/wrk2-api/home-timeline/read"].IsConnected("nginx-web-server", "post-storage-service"))
+
 }
 
 /* func main() {
