@@ -12,15 +12,15 @@ import (
 	"github.com/jaegertracing/jaeger/model"
 )
 
-func ExtractServicesFromSDG(sdg []models.OperationEdge) map[string]models.ExtendedService {
-	var services = make(map[string]models.ExtendedService)
+func ExtractServicesFromSDG(sdg []models.OperationEdge) map[string]models.TelevisorService {
+	var services = make(map[string]models.TelevisorService)
 
 	for _, value := range sdg {
 		if serviceFrom, ok := services[value.From]; ok {
 			serviceFrom.Dependents = append(serviceFrom.Dependents, value.To)
 			services[value.From] = serviceFrom
 		} else {
-			services[value.From] = models.ExtendedService{
+			services[value.From] = models.TelevisorService{
 				Name:       value.From,
 				Dependents: []string{value.To},
 			}
@@ -30,7 +30,7 @@ func ExtractServicesFromSDG(sdg []models.OperationEdge) map[string]models.Extend
 			serviceTo.Dependencies = append(serviceTo.Dependencies, value.From)
 			services[value.To] = serviceTo
 		} else {
-			services[value.To] = models.ExtendedService{
+			services[value.To] = models.TelevisorService{
 				Name:         value.To,
 				Dependencies: []string{value.From},
 			}
@@ -40,7 +40,7 @@ func ExtractServicesFromSDG(sdg []models.OperationEdge) map[string]models.Extend
 	return services
 }
 
-func CPUUtilizationToSDG(data models.PrometheusAPIResponse, sdg map[string]*models.ExtendedService) {
+func CPUUtilizationToSDG(data models.PrometheusAPIResponse, sdg map[string]*models.TelevisorService) {
 	for _, d := range data.Data.Result {
 		if service, ok := sdg[d.Metric.Name]; ok {
 			service.Cpu.P99 = d.Value[1].(float64) // Needs testing
@@ -136,7 +136,7 @@ func getRootSpan(traces []model.Span) (model.Span, error) {
 	return model.Span{}, errors.New("can't find root span")
 }
 
-func AddCPUToServices(services map[string]models.ExtendedService, cpuData models.PrometheusContainerMetric) map[string]models.ExtendedService {
+func AddCPUToServices(services map[string]models.TelevisorService, cpuData models.PrometheusContainerMetric) map[string]models.TelevisorService {
 	for serviceKey, s := range services {
 		for metricKey, m := range cpuData {
 			if s.IsServiceInContainer(metricKey) {
@@ -149,7 +149,7 @@ func AddCPUToServices(services map[string]models.ExtendedService, cpuData models
 	return services
 }
 
-func AddMemoryToServices(services map[string]models.ExtendedService, memoryData models.PrometheusContainerMetric) map[string]models.ExtendedService {
+func AddMemoryToServices(services map[string]models.TelevisorService, memoryData models.PrometheusContainerMetric) map[string]models.TelevisorService {
 	for serviceKey, s := range services {
 		for metricKey, m := range memoryData {
 			if s.IsServiceInContainer(metricKey) {

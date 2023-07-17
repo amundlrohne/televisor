@@ -7,7 +7,7 @@ import (
 	"github.com/amundlrohne/televisor/models"
 )
 
-func AbsoluteCriticalService(services map[string]models.ExtendedService) models.Annotation {
+func AbsoluteCriticalService(services map[string]models.TelevisorService) models.Annotation {
 	keys := make([]string, 0, len(services))
 
 	for key := range services {

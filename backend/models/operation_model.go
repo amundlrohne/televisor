@@ -71,3 +71,16 @@ func (operations Operations) CombineEdges() []OperationEdge {
 
 	return edges
 }
+
+func (operation Operation) AddEdge(opName string, from string, to string) {
+	if e, ok := operation[opName]; ok {
+		e.Count++
+		operation[opName] = e
+	} else {
+		operation[opName] = OperationEdge{
+			From:  from,
+			To:    to,
+			Count: 1,
+		}
+	}
+}

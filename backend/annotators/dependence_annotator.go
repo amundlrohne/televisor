@@ -7,7 +7,7 @@ import (
 	"github.com/amundlrohne/televisor/models"
 )
 
-func AbsoluteDependenceService(services map[string]models.ExtendedService) models.Annotation {
+func AbsoluteDependenceService(services map[string]models.TelevisorService) models.Annotation {
 	keys := make([]string, 0, len(services))
 
 	for key := range services {

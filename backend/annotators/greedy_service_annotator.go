@@ -11,13 +11,14 @@ func GreedyServiceAnnotator(operations models.Operations) []models.Annotation {
 
 	// Check all operations
 	for _, v := range nonRefOps {
+		compEdges := v
 		// For every edge check if there is another edge that has the same To but different From
 		// Since all edges are from the same request, if they converge they are greedy.
 		for edgeKey, edgeValue := range v {
-			//var convergingEdges []models.OperationEdge
 			convergingEdges := []models.OperationEdge{edgeValue} //append(convergingEdges, edgeValue)
 			convergingOperations := []string{edgeKey}
-			for compKey, compValue := range v {
+			delete(compEdges, edgeKey)
+			for compKey, compValue := range compEdges {
 				if compValue.From != edgeValue.From && compValue.To == edgeValue.To {
 					convergingEdges = append(convergingEdges, compValue)
 					convergingOperations = append(convergingOperations, compKey)

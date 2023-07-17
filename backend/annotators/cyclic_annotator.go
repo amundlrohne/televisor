@@ -6,8 +6,8 @@ import (
 	"github.com/amundlrohne/televisor/models"
 )
 
-func CyclicDependencyAnnotator(operations models.Operations, services map[string]models.ExtendedService) []models.Annotation {
-	cycles := []models.ExtendedService{}
+func CyclicDependencyAnnotator(operations models.Operations, services map[string]models.TelevisorService) []models.Annotation {
+	cycles := []models.TelevisorService{}
 	ops := operations.ClearReflexiveEdges()
 
 	for k, service := range services {

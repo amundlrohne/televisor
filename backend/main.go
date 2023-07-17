@@ -23,13 +23,12 @@ var (
 )
 
 func main() {
-	analyze()
+	operations, services := retrieveTelemetry()
+
+	analyze(operations, services)
 }
 
-func analyze() {
-
-	annotations := []models.Annotation{}
-
+func retrieveTelemetry() (models.Operations, map[string]models.TelevisorService) {
 	flag.Parse()
 	// Set up a connection to the Jaeger Server.
 	conn := connectors.JaegerConnect(*jaeger_addr)
@@ -48,6 +47,13 @@ func analyze() {
 
 	services = utils.AddCPUToServices(services, cpuUtils)
 	services = utils.AddMemoryToServices(services, memoryUtils)
+
+	return operations, services
+}
+
+func analyze(operations models.Operations, services map[string]models.TelevisorService) {
+
+	annotations := []models.Annotation{}
 
 	fmt.Printf("Services %+v \n", services)
 

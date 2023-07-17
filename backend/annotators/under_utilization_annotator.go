@@ -6,7 +6,7 @@ import (
 	"github.com/amundlrohne/televisor/models"
 )
 
-func UnderUtilizationCPUAnnotator(services map[string]models.ExtendedService, req float64) []models.Annotation {
+func UnderUtilizationCPUAnnotator(services map[string]models.TelevisorService, req float64) []models.Annotation {
 	annotations := []models.Annotation{}
 
 	for _, s := range services {
@@ -23,7 +23,7 @@ func UnderUtilizationCPUAnnotator(services map[string]models.ExtendedService, re
 	return annotations
 }
 
-func UnderUtilizationMemoryAnnotator(services map[string]models.ExtendedService, req float64) []models.Annotation {
+func UnderUtilizationMemoryAnnotator(services map[string]models.TelevisorService, req float64) []models.Annotation {
 	annotations := []models.Annotation{}
 
 	for _, s := range services {
