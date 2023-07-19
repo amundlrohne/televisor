@@ -28,10 +28,11 @@ func prometheusQuery(query string) []byte {
 }
 
 func PrometheusContainerCPU() models.PrometheusContainerMetric {
-	const query = `sum by (name) (rate(container_cpu_usage_seconds_total[30s]) * 100)`
-	// const query = `sum by(name) (podman_container_info{name!~".+infra"} * on(id) group_right(name) rate(podman_container_cpu_seconds_total[15s]))`
+	const quantile = `sum(quantile_over_time(0.997, rate(container_cpu_usage_seconds_total[30s])[1h:]) * 100) by (name)`
+	const std = `sum(stddev_over_time(rate(container_cpu_usage_seconds_total[30s])[1h:])) by (name)`
+	const mean = `sum(avg_over_time(rate(container_cpu_usage_seconds_total[30s])[1h:]) * 100) by (name)`
 
-	response := prometheusQuery(query)
+	response := prometheusQuery(quantile)
 
 	var promResult models.PrometheusAPIResponse
 	json.Unmarshal(response, &promResult)
@@ -40,9 +41,11 @@ func PrometheusContainerCPU() models.PrometheusContainerMetric {
 }
 
 func PrometheusContainerMemory() models.PrometheusContainerMetric {
-	const query = `sum by (name) ((container_memory_usage_bytes / on() group_left() machine_memory_bytes) * 100)`
-	// const query = `sum by(name) (podman_container_info{name!~".+infra"} * on(id) group_right(name) podman_container_mem_usage_bytes / 1024 /100)`
-	response := prometheusQuery(query)
+	const quantile = `sum by (name) ((quantile_over_time(0.997, container_memory_usage_bytes[1h]) / on() group_left() machine_memory_bytes) * 100)`
+	const std = `sum by (name) (stddev_over_time(container_memory_usage_bytes[1h]) / on() group_left() machine_memory_bytes)`
+	const mean = `sum by (name) ((avg_over_time(container_memory_usage_bytes[1h]) / on() group_left() machine_memory_bytes) * 100)`
+
+	response := prometheusQuery(quantile)
 
 	var promResult models.PrometheusAPIResponse
 	json.Unmarshal(response, &promResult)
