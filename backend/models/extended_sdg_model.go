@@ -5,16 +5,18 @@ import (
 )
 
 type TelevisorService struct {
-	Name         string
-	Dependents   []string
-	Dependencies []string
-	Cpu          Utilization
-	Memory       Utilization
-	Network      Utilization
+	Name         string      `json:"name"`
+	Dependents   []string    `json:"dependents"`
+	Dependencies []string    `json:"dependencies"`
+	Cpu          Utilization `json:"cpu"`
+	Memory       Utilization `json:"memory"`
+	Network      Utilization `json:"network"`
 }
 
 type Utilization struct {
-	P99 float64
+	Quantile float64 `json:"quantile"`
+	Mean     float64 `json:"mean"`
+	Stdev    float64 `json:"stdev"`
 }
 
 func (service TelevisorService) IsServiceInContainer(containerName string) bool {

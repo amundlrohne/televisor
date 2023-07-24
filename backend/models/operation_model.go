@@ -1,9 +1,9 @@
 package models
 
 type OperationEdge struct {
-	From  string
-	To    string
-	Count int
+	From  string `json:"from"`
+	To    string `json:"to"`
+	Count int    `json:"count"`
 }
 
 type Operations map[string]Operation

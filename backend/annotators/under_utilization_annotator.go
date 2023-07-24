@@ -10,12 +10,12 @@ func UnderUtilizationCPUAnnotator(services map[string]models.TelevisorService, r
 	annotations := []models.Annotation{}
 
 	for _, s := range services {
-		if s.Cpu.P99 <= req {
+		if s.Cpu.Quantile <= req {
 			annotations = append(annotations, models.Annotation{
 				Services:       []string{s.Name},
 				AnnotationType: models.UnderUtilizationCPU,
 				YChartLevel:    models.ServiceLevel,
-				Message:        fmt.Sprintf("Service %s is using %v of the CPU", s.Name, s.Cpu.P99),
+				Message:        fmt.Sprintf("Service %s is using %v of the CPU", s.Name, s.Cpu.Quantile),
 			})
 		}
 	}
@@ -27,12 +27,12 @@ func UnderUtilizationMemoryAnnotator(services map[string]models.TelevisorService
 	annotations := []models.Annotation{}
 
 	for _, s := range services {
-		if s.Memory.P99 <= req {
+		if s.Memory.Quantile <= req {
 			annotations = append(annotations, models.Annotation{
 				Services:       []string{s.Name},
 				AnnotationType: models.UnderUtilizationMemory,
 				YChartLevel:    models.ServiceLevel,
-				Message:        fmt.Sprintf("Service %s is using %v of the memory", s.Name, s.Memory.P99),
+				Message:        fmt.Sprintf("Service %s is using %v of the memory", s.Name, s.Memory.Quantile),
 			})
 		}
 	}

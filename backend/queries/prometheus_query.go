@@ -27,10 +27,8 @@ func prometheusQuery(query string) []byte {
 	return resBody
 }
 
-func PrometheusContainerCPU() models.PrometheusContainerMetric {
+func PrometheusContainerCPUQuantile() models.PrometheusContainerMetric {
 	const quantile = `sum(quantile_over_time(0.997, rate(container_cpu_usage_seconds_total[30s])[1h:]) * 100) by (name)`
-	const std = `sum(stddev_over_time(rate(container_cpu_usage_seconds_total[30s])[1h:])) by (name)`
-	const mean = `sum(avg_over_time(rate(container_cpu_usage_seconds_total[30s])[1h:]) * 100) by (name)`
 
 	response := prometheusQuery(quantile)
 
@@ -40,12 +38,54 @@ func PrometheusContainerCPU() models.PrometheusContainerMetric {
 	return convertApiResponseToMap(promResult)
 }
 
-func PrometheusContainerMemory() models.PrometheusContainerMetric {
+func PrometheusContainerCPUStdev() models.PrometheusContainerMetric {
+	const std = `sum(stddev_over_time(rate(container_cpu_usage_seconds_total[30s])[1h:])) by (name)`
+
+	response := prometheusQuery(std)
+
+	var promResult models.PrometheusAPIResponse
+	json.Unmarshal(response, &promResult)
+
+	return convertApiResponseToMap(promResult)
+}
+
+func PrometheusContainerCPUMean() models.PrometheusContainerMetric {
+	const mean = `sum(avg_over_time(rate(container_cpu_usage_seconds_total[30s])[1h:]) * 100) by (name)`
+
+	response := prometheusQuery(mean)
+
+	var promResult models.PrometheusAPIResponse
+	json.Unmarshal(response, &promResult)
+
+	return convertApiResponseToMap(promResult)
+}
+
+func PrometheusContainerMemoryQuantile() models.PrometheusContainerMetric {
 	const quantile = `sum by (name) ((quantile_over_time(0.997, container_memory_usage_bytes[1h]) / on() group_left() machine_memory_bytes) * 100)`
-	const std = `sum by (name) (stddev_over_time(container_memory_usage_bytes[1h]) / on() group_left() machine_memory_bytes)`
-	const mean = `sum by (name) ((avg_over_time(container_memory_usage_bytes[1h]) / on() group_left() machine_memory_bytes) * 100)`
 
 	response := prometheusQuery(quantile)
+
+	var promResult models.PrometheusAPIResponse
+	json.Unmarshal(response, &promResult)
+
+	return convertApiResponseToMap(promResult)
+}
+
+func PrometheusContainerMemoryStdev() models.PrometheusContainerMetric {
+	const stdev = `sum by (name) (stddev_over_time(container_memory_usage_bytes[1h]) / on() group_left() machine_memory_bytes)`
+
+	response := prometheusQuery(stdev)
+
+	var promResult models.PrometheusAPIResponse
+	json.Unmarshal(response, &promResult)
+
+	return convertApiResponseToMap(promResult)
+}
+
+func PrometheusContainerMemoryMean() models.PrometheusContainerMetric {
+	const mean = `sum by (name) ((avg_over_time(container_memory_usage_bytes[1h]) / on() group_left() machine_memory_bytes) * 100)`
+
+	response := prometheusQuery(mean)
 
 	var promResult models.PrometheusAPIResponse
 	json.Unmarshal(response, &promResult)

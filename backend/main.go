@@ -36,8 +36,14 @@ func retrieveTelemetry() (models.Operations, map[string]models.TelevisorService)
 
 	qsc := pb.NewQueryServiceClient(&conn)
 
-	cpuUtils := queries.PrometheusContainerCPU()
-	memoryUtils := queries.PrometheusContainerMemory()
+	cpuUtilsQuantile := queries.PrometheusContainerCPUQuantile()
+	cpuUtilsMean := queries.PrometheusContainerCPUMean()
+	cpuUtilsStdev := queries.PrometheusContainerCPUStdev()
+
+	memoryUtilsQuantile := queries.PrometheusContainerMemoryQuantile()
+	memoryUtilsMean := queries.PrometheusContainerMemoryMean()
+	memoryUtilsStdev := queries.PrometheusContainerMemoryStdev()
+
 	// networkInUtils := queries.PrometheusContainerNetworkInput()
 	// networkOutUtils := queries.PrometheusContainerNetworkOutput()
 
@@ -45,8 +51,13 @@ func retrieveTelemetry() (models.Operations, map[string]models.TelevisorService)
 	combinedEdges := operations.CombineEdges()
 	services := utils.ExtractServicesFromSDG(combinedEdges)
 
-	services = utils.AddCPUToServices(services, cpuUtils)
-	services = utils.AddMemoryToServices(services, memoryUtils)
+	services = utils.AddCPUQuantileToServices(services, cpuUtilsQuantile)
+	services = utils.AddCPUMeanToServices(services, cpuUtilsMean)
+	services = utils.AddCPUStdevToServices(services, cpuUtilsStdev)
+
+	services = utils.AddMemoryQuantileToServices(services, memoryUtilsQuantile)
+	services = utils.AddMemoryMeanToServices(services, memoryUtilsMean)
+	services = utils.AddMemoryStdevToServices(services, memoryUtilsStdev)
 
 	return operations, services
 }
@@ -77,8 +88,10 @@ func analyze(operations models.Operations, services map[string]models.TelevisorS
 	annotations = append(annotations, cycles...)
 	fmt.Printf("Cycles %+v \n", cycles)
 
-	file, _ := json.MarshalIndent(annotations, "", " ")
+	yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
 
-	_ = ioutil.WriteFile("../annotations.json", file, 0644)
+	file, _ := json.MarshalIndent(yCharModel, "", " ")
+
+	_ = ioutil.WriteFile("../y-chart.json", file, 0644)
 
 }

@@ -40,15 +40,6 @@ func ExtractServicesFromSDG(sdg []models.OperationEdge) map[string]models.Televi
 	return services
 }
 
-func CPUUtilizationToSDG(data models.PrometheusAPIResponse, sdg map[string]*models.TelevisorService) {
-	for _, d := range data.Data.Result {
-		if service, ok := sdg[d.Metric.Name]; ok {
-			service.Cpu.P99 = d.Value[1].(float64) // Needs testing
-			sdg[d.Metric.Name] = service
-		}
-	}
-}
-
 func GetSubSDGs(qsc pb.QueryServiceClient, service string) models.Operations {
 	operations := queries.JaegerOperations(qsc, service)
 
@@ -136,12 +127,12 @@ func getRootSpan(traces []model.Span) (model.Span, error) {
 	return model.Span{}, errors.New("can't find root span")
 }
 
-func AddCPUToServices(services map[string]models.TelevisorService, cpuData models.PrometheusContainerMetric) map[string]models.TelevisorService {
+func AddCPUQuantileToServices(services map[string]models.TelevisorService, cpuData models.PrometheusContainerMetric) map[string]models.TelevisorService {
 	for serviceKey, s := range services {
 		for metricKey, m := range cpuData {
 			if s.IsServiceInContainer(metricKey) {
 				utilization, _ := strconv.ParseFloat(m, 64)
-				s.Cpu.P99 = utilization
+				s.Cpu.Quantile = utilization
 				services[serviceKey] = s
 			}
 		}
@@ -149,12 +140,64 @@ func AddCPUToServices(services map[string]models.TelevisorService, cpuData model
 	return services
 }
 
-func AddMemoryToServices(services map[string]models.TelevisorService, memoryData models.PrometheusContainerMetric) map[string]models.TelevisorService {
+func AddCPUMeanToServices(services map[string]models.TelevisorService, cpuData models.PrometheusContainerMetric) map[string]models.TelevisorService {
+	for serviceKey, s := range services {
+		for metricKey, m := range cpuData {
+			if s.IsServiceInContainer(metricKey) {
+				utilization, _ := strconv.ParseFloat(m, 64)
+				s.Cpu.Mean = utilization
+				services[serviceKey] = s
+			}
+		}
+	}
+	return services
+}
+
+func AddCPUStdevToServices(services map[string]models.TelevisorService, cpuData models.PrometheusContainerMetric) map[string]models.TelevisorService {
+	for serviceKey, s := range services {
+		for metricKey, m := range cpuData {
+			if s.IsServiceInContainer(metricKey) {
+				utilization, _ := strconv.ParseFloat(m, 64)
+				s.Cpu.Stdev = utilization
+				services[serviceKey] = s
+			}
+		}
+	}
+	return services
+}
+
+func AddMemoryQuantileToServices(services map[string]models.TelevisorService, memoryData models.PrometheusContainerMetric) map[string]models.TelevisorService {
 	for serviceKey, s := range services {
 		for metricKey, m := range memoryData {
 			if s.IsServiceInContainer(metricKey) {
 				utilization, _ := strconv.ParseFloat(m, 64)
-				s.Memory.P99 = utilization
+				s.Memory.Quantile = utilization
+				services[serviceKey] = s
+			}
+		}
+	}
+	return services
+}
+
+func AddMemoryMeanToServices(services map[string]models.TelevisorService, memoryData models.PrometheusContainerMetric) map[string]models.TelevisorService {
+	for serviceKey, s := range services {
+		for metricKey, m := range memoryData {
+			if s.IsServiceInContainer(metricKey) {
+				utilization, _ := strconv.ParseFloat(m, 64)
+				s.Memory.Mean = utilization
+				services[serviceKey] = s
+			}
+		}
+	}
+	return services
+}
+
+func AddMemoryStdevToServices(services map[string]models.TelevisorService, memoryData models.PrometheusContainerMetric) map[string]models.TelevisorService {
+	for serviceKey, s := range services {
+		for metricKey, m := range memoryData {
+			if s.IsServiceInContainer(metricKey) {
+				utilization, _ := strconv.ParseFloat(m, 64)
+				s.Memory.Stdev = utilization
 				services[serviceKey] = s
 			}
 		}
