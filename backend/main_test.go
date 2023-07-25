@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/amundlrohne/televisor/annotators"
@@ -9,13 +11,16 @@ import (
 	"github.com/amundlrohne/televisor/utils"
 )
 
+var annotations []models.Annotation
 var operations models.Operations
 var services map[string]models.TelevisorService
 
 func init() {
-	operations = generators.CombinedGenerator()
+	annotations = []models.Annotation{}
+	operations = generators.OperationsGenerator()
 	combinedEdges := operations.CombineEdges()
 	services = utils.ExtractServicesFromSDG(combinedEdges)
+	services = generators.ServiceUtilizationGenerator(services)
 }
 
 func TestAnalyzeMegaserviceAnnotator(t *testing.T) {
@@ -31,6 +36,7 @@ func TestAnalyzeMegaserviceAnnotator(t *testing.T) {
 		t.Fatalf("MegaserviceAnnotator().Services[0] = %s, want %s, error", megaservice[0].Services[0], expectedService)
 	}
 
+	annotations = append(annotations, megaservice...)
 }
 
 func TestAnalyzeGreedyServiceAnnotator(t *testing.T) {
@@ -66,6 +72,8 @@ func TestAnalyzeGreedyServiceAnnotator(t *testing.T) {
 			t.Fatalf("GreedyServiceAnnotator().Operations = %v doesn't exist", k)
 		}
 	}
+
+	annotations = append(annotations, greedy...)
 }
 
 func TestCyclicServiceAnnotator(t *testing.T) {
@@ -89,6 +97,8 @@ func TestCyclicServiceAnnotator(t *testing.T) {
 			t.Fatalf("CyclicServiceAnnotator().Service = %v doesn't exist", k)
 		}
 	}
+
+	annotations = append(annotations, cyclic...)
 }
 
 func TestAnalyzeDependenceAnnotator(t *testing.T) {
@@ -106,6 +116,8 @@ func TestAnalyzeDependenceAnnotator(t *testing.T) {
 	if dependence.Message != expectedMessage {
 		t.Fatalf(`AbsoluteDependenceAnnotator().Message = %s, want %s`, dependence.Message, expectedMessage)
 	}
+
+	annotations = append(annotations, dependence)
 }
 
 func TestAnalyzeCriticalityAnnotator(t *testing.T) {
@@ -122,4 +134,14 @@ func TestAnalyzeCriticalityAnnotator(t *testing.T) {
 	if criticality.Message != expectedMessage {
 		t.Fatalf(`AbsoluteCriticalityAnnotator().Message = %s, want %s`, criticality.Message, expectedMessage)
 	}
+
+	annotations = append(annotations, criticality)
+}
+
+func TestPrintToJSON(t *testing.T) {
+	yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
+
+	file, _ := json.MarshalIndent(yCharModel, "", " ")
+
+	_ = ioutil.WriteFile("../y-chart-test.json", file, 0644)
 }
