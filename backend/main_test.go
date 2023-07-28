@@ -42,15 +42,17 @@ func TestAnalyzeMegaserviceAnnotator(t *testing.T) {
 func TestAnalyzeGreedyServiceAnnotator(t *testing.T) {
 	greedy := annotators.GreedyServiceAnnotator(operations)
 
-	if len(greedy) != 1 {
-		t.Fatalf("GreedyServiceAnnotator() = %v, want 1, error", len(greedy))
+	if len(greedy) != 2 {
+		t.Fatalf("GreedyServiceAnnotator() = %v, want 2, error", len(greedy))
 	}
 
-	expectedServices := map[string]bool{"api-gateway": false, "service-e": false}
+	expectedServices := map[string]bool{"api-gateway": false, "service-e": false, "service-a": false, "service-b": false}
 
-	for _, s := range greedy[0].Services {
-		if _, ok := expectedServices[s]; ok {
-			expectedServices[s] = true
+	for _, g := range greedy {
+		for _, s := range g.Services {
+			if _, ok := expectedServices[s]; ok {
+				expectedServices[s] = true
+			}
 		}
 	}
 
@@ -59,11 +61,14 @@ func TestAnalyzeGreedyServiceAnnotator(t *testing.T) {
 			t.Fatalf("GreedyServiceAnnotator().Service = %v doesn't exist", k)
 		}
 	}
-	expectedOperations := map[string]bool{"op2-subop1": false, "op2-subop6": false}
 
-	for _, s := range greedy[0].Operations {
-		if _, ok := expectedOperations[s]; ok {
-			expectedOperations[s] = true
+	expectedOperations := map[string]bool{"op2-subop1": false, "op2-subop6": false, "op4-subop4": false, "op4-subop5": false}
+
+	for _, g := range greedy {
+		for _, o := range g.Operations {
+			if _, ok := expectedOperations[o]; ok {
+				expectedOperations[o] = true
+			}
 		}
 	}
 
@@ -104,14 +109,14 @@ func TestCyclicServiceAnnotator(t *testing.T) {
 func TestAnalyzeDependenceAnnotator(t *testing.T) {
 	dependence := annotators.AbsoluteDependenceService(services)
 
-	expectedService := "service-a"
+	expectedService := "service-e"
 
 	if dependence.Services[0] != expectedService {
 		t.Log(dependence.Message)
 		t.Fatalf(`AbsoluteDependenceAnnotator() = %s, want %s`, dependence.Services[0], expectedService)
 	}
 
-	expectedMessage := "Service service-a has 2 dependencies"
+	expectedMessage := "Service service-e has 3 dependencies"
 
 	if dependence.Message != expectedMessage {
 		t.Fatalf(`AbsoluteDependenceAnnotator().Message = %s, want %s`, dependence.Message, expectedMessage)
@@ -129,7 +134,7 @@ func TestAnalyzeCriticalityAnnotator(t *testing.T) {
 		t.Fatalf(`AbsoluteCriticalityAnnotator() = %s, want %s`, criticality.Services[0], expectedService)
 	}
 
-	expectedMessage := "Service service-b has 3 dependents and 1 dependencies"
+	expectedMessage := "Service service-b has 4 dependents and 1 dependencies"
 
 	if criticality.Message != expectedMessage {
 		t.Fatalf(`AbsoluteCriticalityAnnotator().Message = %s, want %s`, criticality.Message, expectedMessage)

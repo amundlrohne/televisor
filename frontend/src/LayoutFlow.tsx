@@ -75,13 +75,33 @@ const LayoutFlow = () => {
             fitView
             style={{ flexGrow: 1 }}
         >
-            <Panel position="top-right">
+            <Panel
+                position="top-right"
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: "0.5em",
+                    backgroundColor: "#475569",
+                    padding: "0.5em",
+                    borderRadius: "0.5em",
+                }}
+            >
                 <button onClick={() => onLayout("TB")}>vertical layout</button>
                 <button onClick={() => onLayout("LR")}>
                     horizontal layout
                 </button>
             </Panel>
-            <Panel position="bottom-right">
+            <Panel
+                position="bottom-right"
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: "0.5em",
+                    backgroundColor: "#475569",
+                    padding: "0.5em",
+                    borderRadius: "0.5em",
+                }}
+            >
                 <button onClick={() => handleChangeEdges("")}>Show All</button>
                 {Object.keys(flowChart.edges).map((e, i) => (
                     <button key={i} onClick={() => handleChangeEdges(e)}>
