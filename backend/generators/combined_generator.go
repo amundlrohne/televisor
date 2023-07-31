@@ -8,20 +8,16 @@ func OperationsGenerator() models.Operations {
 	operations["operation-megaservice"] = make(models.Operation)
 	operations["operation-cyclic"] = make(models.Operation)
 	operations["operation-criticality"] = make(models.Operation)
-	operations["operation-greedy"] = make(models.Operation)
+	operations["operation-inappropriate-intimacy"] = make(models.Operation)
 
-	operations["operation-megaservice"].AddEdge("op1-subop1", "api-gateway", "service-a")
-	operations["operation-megaservice"].AddEdge("op1-subop2", "api-gateway", "service-b")
-	operations["operation-megaservice"].AddEdge("op1-subop3", "api-gateway", "service-c")
-	operations["operation-megaservice"].AddEdge("op1-subop4", "api-gateway", "service-d")
-	operations["operation-megaservice"].AddEdge("op1-subop5", "api-gateway", "service-d")
+	operations["operation-megaservice"].AddEdge("op1-subop1", "api-gateway", "service-d")
+	operations["operation-megaservice"].AddEdge("op1-subop2", "api-gateway", "service-d")
+	operations["operation-megaservice"].AddEdge("op1-subop3", "service-d", "service-g")
+	operations["operation-megaservice"].AddEdge("op1-subop4", "service-d", "service-h")
 
-	operations["operation-cyclic"].AddEdge("op2-subop1", "api-gateway", "service-a")
-	operations["operation-cyclic"].AddEdge("op2-subop5", "service-a", "service-e")
-	operations["operation-cyclic"].AddEdge("op2-subop6", "service-e", "service-a")
-	operations["operation-cyclic"].AddEdge("op2-subop2", "api-gateway", "service-b")
-	operations["operation-cyclic"].AddEdge("op2-subop3", "api-gateway", "service-c")
-	operations["operation-cyclic"].AddEdge("op2-subop4", "api-gateway", "service-d")
+	operations["operation-cyclic"].AddEdge("op2-subop1", "api-gateway", "service-b")
+	operations["operation-cyclic"].AddEdge("op2-subop2", "service-b", "service-f")
+	operations["operation-cyclic"].AddEdge("op2-subop3", "service-f", "service-b")
 
 	operations["operation-criticality"].AddEdge("op3-subop1", "api-gateway", "service-a")
 	operations["operation-criticality"].AddEdge("op3-subop2", "api-gateway", "service-b")
@@ -29,12 +25,12 @@ func OperationsGenerator() models.Operations {
 	operations["operation-criticality"].AddEdge("op3-subop4", "service-b", "service-g")
 	operations["operation-criticality"].AddEdge("op3-subop5", "service-b", "service-h")
 
-	operations["operation-greedy"].AddEdge("op4-subop1", "api-gateway", "service-a")
-	operations["operation-greedy"].AddEdge("op4-subop2", "api-gateway", "service-b")
-	operations["operation-greedy"].AddEdge("op4-subop3", "api-gateway", "service-c")
-	operations["operation-greedy"].AddEdge("op4-subop4", "service-a", "service-e")
-	operations["operation-greedy"].AddEdge("op4-subop5", "service-b", "service-e")
-	operations["operation-greedy"].AddEdge("op4-subop6", "service-c", "service-e")
+	operations["operation-inappropriate-intimacy"].AddEdge("op4-subop1", "api-gateway", "service-a")
+	operations["operation-inappropriate-intimacy"].AddEdge("op4-subop2", "api-gateway", "service-b")
+	operations["operation-inappropriate-intimacy"].AddEdge("op4-subop3", "api-gateway", "service-c")
+	operations["operation-inappropriate-intimacy"].AddEdge("op4-subop4", "service-a", "service-e")
+	operations["operation-inappropriate-intimacy"].AddEdge("op4-subop5", "service-b", "service-e")
+	operations["operation-inappropriate-intimacy"].AddEdge("op4-subop6", "service-c", "service-e")
 
 	return operations
 }
@@ -49,8 +45,8 @@ func ServiceUtilizationGenerator(services map[string]models.TelevisorService) ma
 	}
 
 	if r, ok := result["service-a"]; ok {
-		r.Cpu = models.Utilization{Quantile: 0.74, Mean: 0.13, Stdev: 0.0022}
-		r.Memory = models.Utilization{Quantile: 0.67, Mean: 0.43, Stdev: 0.0020}
+		r.Cpu = models.Utilization{Quantile: 0.45, Mean: 0.23, Stdev: 0.0024}
+		r.Memory = models.Utilization{Quantile: 0.19, Mean: 0.16, Stdev: 0.0000}
 		result["service-a"] = r
 	}
 
@@ -67,8 +63,8 @@ func ServiceUtilizationGenerator(services map[string]models.TelevisorService) ma
 	}
 
 	if r, ok := result["service-d"]; ok {
-		r.Cpu = models.Utilization{Quantile: 0.45, Mean: 0.23, Stdev: 0.0024}
-		r.Memory = models.Utilization{Quantile: 0.19, Mean: 0.16, Stdev: 0.0000}
+		r.Cpu = models.Utilization{Quantile: 0.74, Mean: 0.13, Stdev: 0.0022}
+		r.Memory = models.Utilization{Quantile: 0.67, Mean: 0.43, Stdev: 0.0020}
 		result["service-d"] = r
 	}
 

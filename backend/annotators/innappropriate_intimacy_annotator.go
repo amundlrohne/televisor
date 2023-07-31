@@ -4,7 +4,7 @@ import (
 	"github.com/amundlrohne/televisor/models"
 )
 
-func GreedyServiceAnnotator(operations models.Operations) []models.Annotation {
+func InappropriateIntimacyServiceAnnotator(operations models.Operations) []models.Annotation {
 	annotations := []models.Annotation{}
 
 	nonRefOps := operations.ClearReflexiveEdges()
@@ -27,7 +27,7 @@ func GreedyServiceAnnotator(operations models.Operations) []models.Annotation {
 			// Create annotation if service has two or more converging edges
 			if len(convergingEdges) > 1 {
 				annotation := models.Annotation{}
-				annotation.AnnotationType = models.Greedy
+				annotation.AnnotationType = models.InappropriateIntimacy
 				annotation.YChartLevel = models.OperationLevel
 				annotation.Operations = convergingOperations
 				for _, edge := range convergingEdges {

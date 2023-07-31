@@ -10,7 +10,7 @@ func MegaserviceAnnotator(operations models.Operations) []models.Annotation {
 	operations = operations.ClearReflexiveEdges()
 
 	// Loop over all operations
-	for _, v := range operations {
+	for apiK, v := range operations {
 		// If operation has two or more edges that share the same From and To, To is a megaservice
 		for edgeKey, edge := range v {
 			megaservice := []models.OperationEdge{edge}
@@ -32,10 +32,11 @@ func MegaserviceAnnotator(operations models.Operations) []models.Annotation {
 
 				if !exists {
 					annotation := models.Annotation{
-						AnnotationType: models.Megaservice,
-						YChartLevel:    models.OperationLevel,
-						Services:       []string{megaservice[0].To},
-						Operations:     operations,
+						AnnotationType:      models.Megaservice,
+						YChartLevel:         models.OperationLevel,
+						Services:            []string{megaservice[0].To},
+						Operations:          operations,
+						InitiatingOperation: apiK,
 					}
 					annotations = append(annotations, annotation)
 				}

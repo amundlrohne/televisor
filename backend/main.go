@@ -12,6 +12,7 @@ import (
 	"github.com/amundlrohne/televisor/connectors"
 	"github.com/amundlrohne/televisor/models"
 	"github.com/amundlrohne/televisor/queries"
+	"github.com/amundlrohne/televisor/recommenders"
 	"github.com/amundlrohne/televisor/utils"
 )
 
@@ -25,7 +26,26 @@ var (
 func main() {
 	operations, services := retrieveTelemetry()
 
-	analyze(operations, services)
+	annotations := analyze(operations, services)
+	recommend(operations, services, annotations)
+}
+
+func recommend(operations models.Operations, services map[string]models.TelevisorService, annotations []models.Annotation) {
+	for _, a := range annotations {
+		if a.AnnotationType == models.Megaservice {
+			ss, o := recommenders.MegaserviceRecommender(services[a.Services[0]], operations[a.InitiatingOperation])
+			delete(services, a.Services[0])
+			for _, v := range ss {
+				services[v.Name] = v
+			}
+			operations[a.InitiatingOperation] = o
+		}
+	}
+
+	yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
+	file, _ := json.MarshalIndent(yCharModel, "", " ")
+	_ = ioutil.WriteFile("../y-chart-recommendation.json", file, 0644)
+
 }
 
 func retrieveTelemetry() (models.Operations, map[string]models.TelevisorService) {
@@ -62,7 +82,7 @@ func retrieveTelemetry() (models.Operations, map[string]models.TelevisorService)
 	return operations, services
 }
 
-func analyze(operations models.Operations, services map[string]models.TelevisorService) {
+func analyze(operations models.Operations, services map[string]models.TelevisorService) []models.Annotation {
 
 	annotations := []models.Annotation{}
 
@@ -72,9 +92,9 @@ func analyze(operations models.Operations, services map[string]models.TelevisorS
 	annotations = append(annotations, megaservices...)
 	fmt.Printf("Megaservices: %+v \n", megaservices)
 
-	greedy := annotators.GreedyServiceAnnotator(operations)
-	annotations = append(annotations, greedy...)
-	fmt.Printf("Greedy: %+v \n", greedy)
+	innapropriateIntimacy := annotators.InappropriateIntimacyServiceAnnotator(operations)
+	annotations = append(annotations, innapropriateIntimacy...)
+	fmt.Printf("Innapropriate Intimacy: %+v \n", innapropriateIntimacy)
 
 	criticality := annotators.AbsoluteCriticalService(services)
 	annotations = append(annotations, criticality)
@@ -89,9 +109,9 @@ func analyze(operations models.Operations, services map[string]models.TelevisorS
 	fmt.Printf("Cycles %+v \n", cycles)
 
 	yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
-
 	file, _ := json.MarshalIndent(yCharModel, "", " ")
-
 	_ = ioutil.WriteFile("../y-chart.json", file, 0644)
+
+	return annotations
 
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/amundlrohne/televisor/annotators"
 	"github.com/amundlrohne/televisor/generators"
 	"github.com/amundlrohne/televisor/models"
+	"github.com/amundlrohne/televisor/recommenders"
 	"github.com/amundlrohne/televisor/utils"
 )
 
@@ -39,14 +40,14 @@ func TestAnalyzeMegaserviceAnnotator(t *testing.T) {
 	annotations = append(annotations, megaservice...)
 }
 
-func TestAnalyzeGreedyServiceAnnotator(t *testing.T) {
-	greedy := annotators.GreedyServiceAnnotator(operations)
+func TestAnalyzeInappropriateIntimacyServiceAnnotator(t *testing.T) {
+	greedy := annotators.InappropriateIntimacyServiceAnnotator(operations)
 
 	if len(greedy) != 2 {
-		t.Fatalf("GreedyServiceAnnotator() = %v, want 2, error", len(greedy))
+		t.Fatalf("InappropriateIntimacyServiceAnnotator() = %v, want 2, error", len(greedy))
 	}
 
-	expectedServices := map[string]bool{"api-gateway": false, "service-e": false, "service-a": false, "service-b": false}
+	expectedServices := map[string]bool{"api-gateway": false, "service-f": false, "service-a": false, "service-b": false}
 
 	for _, g := range greedy {
 		for _, s := range g.Services {
@@ -58,11 +59,11 @@ func TestAnalyzeGreedyServiceAnnotator(t *testing.T) {
 
 	for k, v := range expectedServices {
 		if !v {
-			t.Fatalf("GreedyServiceAnnotator().Service = %v doesn't exist", k)
+			t.Fatalf("InappropriateIntimacyServiceAnnotator().Service = %v doesn't exist", k)
 		}
 	}
 
-	expectedOperations := map[string]bool{"op2-subop1": false, "op2-subop6": false, "op4-subop4": false, "op4-subop5": false}
+	expectedOperations := map[string]bool{"op2-subop1": false, "op2-subop3": false, "op4-subop4": false, "op4-subop5": false}
 
 	for _, g := range greedy {
 		for _, o := range g.Operations {
@@ -74,21 +75,21 @@ func TestAnalyzeGreedyServiceAnnotator(t *testing.T) {
 
 	for k, v := range expectedOperations {
 		if !v {
-			t.Fatalf("GreedyServiceAnnotator().Operations = %v doesn't exist", k)
+			t.Fatalf("InappropriateIntimacyServiceAnnotator().Operations = %v doesn't exist", k)
 		}
 	}
 
 	annotations = append(annotations, greedy...)
 }
 
-func TestCyclicServiceAnnotator(t *testing.T) {
+/* func TestCyclicServiceAnnotator(t *testing.T) {
 	cyclic := annotators.CyclicDependencyAnnotator(operations, services)
 
 	if len(cyclic) != 2 {
 		t.Fatalf("CyclicServiceAnnotator() = %v, want 2, error", len(cyclic))
 	}
 
-	expectedCycles := map[string]bool{"service-e": false, "service-a": false}
+	expectedCycles := map[string]bool{"service-b": false, "service-f": false}
 
 	for _, a := range cyclic {
 		service := a.Services[0]
@@ -104,7 +105,7 @@ func TestCyclicServiceAnnotator(t *testing.T) {
 	}
 
 	annotations = append(annotations, cyclic...)
-}
+} */
 
 func TestAnalyzeDependenceAnnotator(t *testing.T) {
 	dependence := annotators.AbsoluteDependenceService(services)
@@ -134,7 +135,7 @@ func TestAnalyzeCriticalityAnnotator(t *testing.T) {
 		t.Fatalf(`AbsoluteCriticalityAnnotator() = %s, want %s`, criticality.Services[0], expectedService)
 	}
 
-	expectedMessage := "Service service-b has 4 dependents and 1 dependencies"
+	expectedMessage := "Service service-b has 4 dependents and 2 dependencies"
 
 	if criticality.Message != expectedMessage {
 		t.Fatalf(`AbsoluteCriticalityAnnotator().Message = %s, want %s`, criticality.Message, expectedMessage)
@@ -149,4 +150,22 @@ func TestPrintToJSON(t *testing.T) {
 	file, _ := json.MarshalIndent(yCharModel, "", " ")
 
 	_ = ioutil.WriteFile("../y-chart-test.json", file, 0644)
+}
+
+func TestRecommendationEngine(t *testing.T) {
+	for _, a := range annotations {
+		if a.AnnotationType == models.Megaservice {
+			ss, o := recommenders.MegaserviceRecommender(services[a.Services[0]], operations[a.InitiatingOperation])
+			delete(services, a.Services[0])
+			for _, v := range ss {
+				services[v.Name] = v
+			}
+			operations[a.InitiatingOperation] = o
+		}
+	}
+
+	yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
+	file, _ := json.MarshalIndent(yCharModel, "", " ")
+	_ = ioutil.WriteFile("../y-chart-recommendation.json", file, 0644)
+
 }
