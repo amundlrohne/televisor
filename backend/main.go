@@ -40,6 +40,10 @@ func recommend(operations models.Operations, services map[string]models.Televiso
 			}
 			operations[a.InitiatingOperation] = o
 		}
+
+		if a.AnnotationType == models.InappropriateIntimacy {
+			services, operations = recommenders.InappropriateIntimacyRecommender(services, operations, a.InitiatingOperation, a.Services)
+		}
 	}
 
 	yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}

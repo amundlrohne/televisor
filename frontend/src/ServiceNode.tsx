@@ -25,7 +25,9 @@ const ServiceNode = ({ data }: IProps) => {
 
             <div
                 style={{
-                    backgroundColor: "#FEFEFE",
+                    backgroundColor: `hsl(${
+                        100 - data.cpu.quantile * 100
+                    }, 100%, 50%)`,
                     border: "black solid 1px",
                     padding: "0.5em",
                     borderRadius: "0.5em",

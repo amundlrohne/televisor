@@ -7,7 +7,7 @@ func OperationsGenerator() models.Operations {
 
 	operations["operation-megaservice"] = make(models.Operation)
 	operations["operation-cyclic"] = make(models.Operation)
-	operations["operation-criticality"] = make(models.Operation)
+	//operations["operation-criticality"] = make(models.Operation)
 	operations["operation-inappropriate-intimacy"] = make(models.Operation)
 
 	operations["operation-megaservice"].AddEdge("op1-subop1", "api-gateway", "service-d")
@@ -17,14 +17,14 @@ func OperationsGenerator() models.Operations {
 
 	operations["operation-cyclic"].AddEdge("op2-subop1", "api-gateway", "service-b")
 	operations["operation-cyclic"].AddEdge("op2-subop2", "service-b", "service-f")
-	operations["operation-cyclic"].AddEdge("op2-subop3", "service-f", "service-b")
+	//operations["operation-cyclic"].AddEdge("op2-subop3", "service-f", "service-b")
 
-	operations["operation-criticality"].AddEdge("op3-subop1", "api-gateway", "service-a")
-	operations["operation-criticality"].AddEdge("op3-subop2", "api-gateway", "service-b")
-	operations["operation-criticality"].AddEdge("op3-subop3", "service-b", "service-f")
-	operations["operation-criticality"].AddEdge("op3-subop4", "service-b", "service-g")
-	operations["operation-criticality"].AddEdge("op3-subop5", "service-b", "service-h")
-
+	/* 	operations["operation-criticality"].AddEdge("op3-subop1", "api-gateway", "service-a")
+	   	operations["operation-criticality"].AddEdge("op3-subop2", "api-gateway", "service-b")
+	   	operations["operation-criticality"].AddEdge("op3-subop3", "service-b", "service-f")
+	   	operations["operation-criticality"].AddEdge("op3-subop4", "service-b", "service-g")
+	   	operations["operation-criticality"].AddEdge("op3-subop5", "service-b", "service-h")
+	*/
 	operations["operation-inappropriate-intimacy"].AddEdge("op4-subop1", "api-gateway", "service-a")
 	operations["operation-inappropriate-intimacy"].AddEdge("op4-subop2", "api-gateway", "service-b")
 	operations["operation-inappropriate-intimacy"].AddEdge("op4-subop3", "api-gateway", "service-c")

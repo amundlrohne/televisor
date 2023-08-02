@@ -10,7 +10,7 @@ func InappropriateIntimacyServiceAnnotator(operations models.Operations) []model
 	nonRefOps := operations.ClearReflexiveEdges()
 
 	// Check all operations
-	for _, v := range nonRefOps {
+	for apiK, v := range nonRefOps {
 		compEdges := v
 		// For every edge check if there is another edge that has the same To but different From
 		// Since all edges are from the same request, if they converge they are greedy.
@@ -30,6 +30,7 @@ func InappropriateIntimacyServiceAnnotator(operations models.Operations) []model
 				annotation.AnnotationType = models.InappropriateIntimacy
 				annotation.YChartLevel = models.OperationLevel
 				annotation.Operations = convergingOperations
+				annotation.InitiatingOperation = apiK
 				for _, edge := range convergingEdges {
 					annotation.Services = append(annotation.Services, edge.From)
 				}

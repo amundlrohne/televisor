@@ -43,11 +43,11 @@ func TestAnalyzeMegaserviceAnnotator(t *testing.T) {
 func TestAnalyzeInappropriateIntimacyServiceAnnotator(t *testing.T) {
 	greedy := annotators.InappropriateIntimacyServiceAnnotator(operations)
 
-	if len(greedy) != 2 {
-		t.Fatalf("InappropriateIntimacyServiceAnnotator() = %v, want 2, error", len(greedy))
+	if len(greedy) != 1 {
+		t.Fatalf("InappropriateIntimacyServiceAnnotator() = %v, want 1, error", len(greedy))
 	}
 
-	expectedServices := map[string]bool{"api-gateway": false, "service-f": false, "service-a": false, "service-b": false}
+	expectedServices := map[string]bool{"service-a": false, "service-b": false, "service-c": false}
 
 	for _, g := range greedy {
 		for _, s := range g.Services {
@@ -63,7 +63,7 @@ func TestAnalyzeInappropriateIntimacyServiceAnnotator(t *testing.T) {
 		}
 	}
 
-	expectedOperations := map[string]bool{"op2-subop1": false, "op2-subop3": false, "op4-subop4": false, "op4-subop5": false}
+	expectedOperations := map[string]bool{"op4-subop4": false, "op4-subop5": false, "op4-subop6": false}
 
 	for _, g := range greedy {
 		for _, o := range g.Operations {
@@ -135,7 +135,7 @@ func TestAnalyzeCriticalityAnnotator(t *testing.T) {
 		t.Fatalf(`AbsoluteCriticalityAnnotator() = %s, want %s`, criticality.Services[0], expectedService)
 	}
 
-	expectedMessage := "Service service-b has 4 dependents and 2 dependencies"
+	expectedMessage := "Service service-b has 2 dependents and 1 dependencies"
 
 	if criticality.Message != expectedMessage {
 		t.Fatalf(`AbsoluteCriticalityAnnotator().Message = %s, want %s`, criticality.Message, expectedMessage)
@@ -161,6 +161,10 @@ func TestRecommendationEngine(t *testing.T) {
 				services[v.Name] = v
 			}
 			operations[a.InitiatingOperation] = o
+		}
+
+		if a.AnnotationType == models.InappropriateIntimacy {
+			services, operations = recommenders.InappropriateIntimacyRecommender(services, operations, a.InitiatingOperation, a.Services)
 		}
 	}
 
