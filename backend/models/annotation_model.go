@@ -23,11 +23,21 @@ const (
 	ApplicationLevel YChartLevel = "APPLICATION"
 )
 
+type AnnotationLevel string
+
+const (
+	Critical AnnotationLevel = "CRITICAL"
+	Warning  AnnotationLevel = "WARNING"
+	Info     AnnotationLevel = "INFO"
+)
+
 type Annotation struct {
-	Services            []string       `json:"services"`
-	Operations          []string       `json:"operations"`
-	InitiatingOperation string         `json:"initiatingOperation"`
-	Message             string         `json:"message"`
-	AnnotationType      AnnotationType `json:"annotationType"`
-	YChartLevel         YChartLevel    `json:"yChartLevel"`
+	Services            []string        `json:"services"`
+	Operations          []string        `json:"operations"`
+	InitiatingOperation string          `json:"initiatingOperation"`
+	Message             string          `json:"message"`
+	AnnotationType      AnnotationType  `json:"annotationType"`
+	YChartLevel         YChartLevel     `json:"yChartLevel"`
+	AnnotationLevel     AnnotationLevel `json:"annotationLevel"`
+	Recomendation       Recommendation  `json:"recommendation"`
 }

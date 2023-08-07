@@ -25,7 +25,7 @@ export default function App() {
                         flexDirection: "column",
 
                         overflowY: "auto",
-
+                        width: "48em",
                         gap: "1em",
                         padding: "1em",
                         borderRadius: "0 1em 1em 0",
@@ -41,6 +41,11 @@ export default function App() {
                         >
                             <h4>{a.annotationType}</h4>
                             <p>{a.message}</p>
+                            {a.recommendation && (
+                                <p>
+                                    Recommendation: {a.recommendation.message}
+                                </p>
+                            )}
                             <p>Services:</p>
                             <ul>
                                 {a.services?.map((s, si) => (

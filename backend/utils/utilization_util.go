@@ -18,3 +18,11 @@ func AddUtilizations(util1 models.Utilization, util2 models.Utilization) models.
 		Stdev:    util1.Stdev + util2.Stdev,
 	}
 }
+
+func SumUtilizations(utils ...models.Utilization) models.Utilization {
+	result := models.Utilization{}
+	for _, u := range utils {
+		result = AddUtilizations(result, u)
+	}
+	return result
+}

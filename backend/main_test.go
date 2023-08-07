@@ -31,7 +31,7 @@ func TestAnalyzeMegaserviceAnnotator(t *testing.T) {
 		t.Fatalf("len(MegaserviceAnnotator()) = %v, want 1, error", len(megaservice))
 	}
 
-	expectedService := "service-d"
+	expectedService := "service-f"
 
 	if megaservice[0].Services[0] != expectedService {
 		t.Fatalf("MegaserviceAnnotator().Services[0] = %s, want %s, error", megaservice[0].Services[0], expectedService)
@@ -40,16 +40,29 @@ func TestAnalyzeMegaserviceAnnotator(t *testing.T) {
 	annotations = append(annotations, megaservice...)
 }
 
-func TestAnalyzeInappropriateIntimacyServiceAnnotator(t *testing.T) {
-	greedy := annotators.InappropriateIntimacyServiceAnnotator(operations)
+func TestCyclicServiceAnnotator(t *testing.T) {
+	cyclic := annotators.CyclicDependencyAnnotator(operations, services)
 
-	if len(greedy) != 1 {
-		t.Fatalf("InappropriateIntimacyServiceAnnotator() = %v, want 1, error", len(greedy))
+	annotations = append(annotations, cyclic...)
+}
+
+func TestAnalyzeInappropriateIntimacyServiceAnnotator(t *testing.T) {
+	cycles := []models.Annotation{}
+	for _, a := range annotations {
+		if a.AnnotationType == models.Cyclic {
+			cycles = append(cycles, a)
+		}
 	}
 
-	expectedServices := map[string]bool{"service-a": false, "service-b": false, "service-c": false}
+	inappropriateIntimacy := annotators.InappropriateIntimacyServiceAnnotator(operations, cycles)
 
-	for _, g := range greedy {
+	if len(inappropriateIntimacy) != 1 {
+		t.Fatalf("InappropriateIntimacyServiceAnnotator() = %v, want 1, error", len(inappropriateIntimacy))
+	}
+
+	expectedServices := map[string]bool{"service-d": false, "service-b": false, "service-c": false}
+
+	for _, g := range inappropriateIntimacy {
 		for _, s := range g.Services {
 			if _, ok := expectedServices[s]; ok {
 				expectedServices[s] = true
@@ -63,49 +76,14 @@ func TestAnalyzeInappropriateIntimacyServiceAnnotator(t *testing.T) {
 		}
 	}
 
-	expectedOperations := map[string]bool{"op4-subop4": false, "op4-subop5": false, "op4-subop6": false}
+	annotations = append(annotations, inappropriateIntimacy...)
+}
 
-	for _, g := range greedy {
-		for _, o := range g.Operations {
-			if _, ok := expectedOperations[o]; ok {
-				expectedOperations[o] = true
-			}
-		}
-	}
-
-	for k, v := range expectedOperations {
-		if !v {
-			t.Fatalf("InappropriateIntimacyServiceAnnotator().Operations = %v doesn't exist", k)
-		}
-	}
+func TestGreedyServiceAnnotator(t *testing.T) {
+	greedy := annotators.GreedyServiceAnnotator(operations, services)
 
 	annotations = append(annotations, greedy...)
 }
-
-/* func TestCyclicServiceAnnotator(t *testing.T) {
-	cyclic := annotators.CyclicDependencyAnnotator(operations, services)
-
-	if len(cyclic) != 2 {
-		t.Fatalf("CyclicServiceAnnotator() = %v, want 2, error", len(cyclic))
-	}
-
-	expectedCycles := map[string]bool{"service-b": false, "service-f": false}
-
-	for _, a := range cyclic {
-		service := a.Services[0]
-		if _, ok := expectedCycles[service]; ok {
-			expectedCycles[service] = true
-		}
-	}
-
-	for k, v := range expectedCycles {
-		if !v {
-			t.Fatalf("CyclicServiceAnnotator().Service = %v doesn't exist", k)
-		}
-	}
-
-	annotations = append(annotations, cyclic...)
-} */
 
 func TestAnalyzeDependenceAnnotator(t *testing.T) {
 	dependence := annotators.AbsoluteDependenceService(services)
@@ -129,13 +107,13 @@ func TestAnalyzeDependenceAnnotator(t *testing.T) {
 func TestAnalyzeCriticalityAnnotator(t *testing.T) {
 	criticality := annotators.AbsoluteCriticalService(services)
 
-	expectedService := "service-b"
+	expectedService := "service-e"
 
 	if criticality.Services[0] != expectedService {
 		t.Fatalf(`AbsoluteCriticalityAnnotator() = %s, want %s`, criticality.Services[0], expectedService)
 	}
 
-	expectedMessage := "Service service-b has 2 dependents and 1 dependencies"
+	expectedMessage := "Service service-e has 2 dependents and 3 dependencies"
 
 	if criticality.Message != expectedMessage {
 		t.Fatalf(`AbsoluteCriticalityAnnotator().Message = %s, want %s`, criticality.Message, expectedMessage)
@@ -153,23 +131,32 @@ func TestPrintToJSON(t *testing.T) {
 }
 
 func TestRecommendationEngine(t *testing.T) {
-	for _, a := range annotations {
+	for i, a := range annotations {
 		if a.AnnotationType == models.Megaservice {
-			ss, o := recommenders.MegaserviceRecommender(services[a.Services[0]], operations[a.InitiatingOperation])
-			delete(services, a.Services[0])
-			for _, v := range ss {
-				services[v.Name] = v
-			}
-			operations[a.InitiatingOperation] = o
-		}
-
-		if a.AnnotationType == models.InappropriateIntimacy {
-			services, operations = recommenders.InappropriateIntimacyRecommender(services, operations, a.InitiatingOperation, a.Services)
+			services, operations, annotations[i] = recommenders.MegaserviceRecommender(services, operations, a)
 		}
 	}
 
+	annotations = Analyze(operations, services)
+
+	for i, a := range annotations {
+		if a.AnnotationType == models.InappropriateIntimacy {
+			services, operations, annotations[i] = recommenders.InappropriateIntimacyRecommender(services, operations, a)
+		}
+	}
+
+	annotations = Analyze(operations, services)
+
+	for i, a := range annotations {
+		if a.AnnotationType == models.Greedy {
+			services, operations, annotations[i] = recommenders.GreedyServiceRecommender(services, operations, a)
+		}
+	}
+
+	annotations = Analyze(operations, services)
+
 	yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
-	file, _ := json.MarshalIndent(yCharModel, "", " ")
+	file, _ := json.MarshalIndent(yCharModel, "", "    ")
 	_ = ioutil.WriteFile("../y-chart-recommendation.json", file, 0644)
 
 }

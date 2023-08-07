@@ -1,103 +1,132 @@
 package annotators
 
 import (
+	"fmt"
+
 	"github.com/amundlrohne/televisor/models"
 )
 
-func InappropriateIntimacyServiceAnnotator(operations models.Operations) []models.Annotation {
-	annotations := []models.Annotation{}
+func findConvergingPaths(c convergance, operation models.Operation, result ...models.OperationEdge) []models.OperationEdge {
+	//result := []models.OperationEdge{}
 
-	nonRefOps := operations.ClearReflexiveEdges()
+	for _, conv := range c.Converging {
 
-	// Check all operations
-	for apiK, v := range nonRefOps {
-		compEdges := v
-		// For every edge check if there is another edge that has the same To but different From
-		// Since all edges are from the same request, if they converge they are greedy.
-		for edgeKey, edgeValue := range v {
-			convergingEdges := []models.OperationEdge{edgeValue} //append(convergingEdges, edgeValue)
-			convergingOperations := []string{edgeKey}
-			delete(compEdges, edgeKey)
-			for compKey, compValue := range compEdges {
-				if compValue.From != edgeValue.From && compValue.To == edgeValue.To {
-					convergingEdges = append(convergingEdges, compValue)
-					convergingOperations = append(convergingOperations, compKey)
-				}
+		count := 0
+		for _, op := range operation {
+			if conv == op.From {
+				count++
 			}
-			// Create annotation if service has two or more converging edges
-			if len(convergingEdges) > 1 {
-				annotation := models.Annotation{}
-				annotation.AnnotationType = models.InappropriateIntimacy
-				annotation.YChartLevel = models.OperationLevel
-				annotation.Operations = convergingOperations
-				annotation.InitiatingOperation = apiK
-				for _, edge := range convergingEdges {
-					annotation.Services = append(annotation.Services, edge.From)
-				}
-				annotations = append(annotations, annotation)
-			}
+		}
 
+		if count > 1 {
+			continue
+		}
+
+		for ko, op := range operation {
+			if c.Target == op.To && conv == op.From {
+
+				for k, o := range operation {
+					if o.To == conv {
+						o.To = c.Target
+						operation[k] = o
+					}
+				}
+				result = append(result, op)
+				delete(operation, ko)
+			}
 		}
 	}
 
-	return removeSubsets(annotations)
-}
+	convergingService := findConvergingService(operation)
 
-func removeSubsets(annotations []models.Annotation) []models.Annotation {
-	result := []models.Annotation{}
-
-	for _, a := range annotations {
-
-		isUnique := true
-		for j, r := range result {
-			if isSubset(a.Services, r.Services) && isSubset(a.Operations, r.Operations) {
-				result[j] = a
-				isUnique = false
-			} else if isSubset(r.Services, a.Services) && isSubset(r.Operations, a.Operations) {
-				isUnique = false
-				break
-			}
-		}
-		if isUnique {
-			result = append(result, a)
-		}
+	if len(convergingService) > 0 {
+		return findConvergingPaths(convergingService[0], operation, result...)
 	}
 
 	return result
 }
 
-func isSubset(set []string, subset []string) bool {
-	if len(subset) > len(set) {
-		return false
+func InappropriateIntimacyServiceAnnotator(requests models.Operations, cyclicOperations []models.Annotation) []models.Annotation {
+	annotations := []models.Annotation{}
+	nonReflexiveOperations := requests.ClearReflexiveEdges()
+
+	for _, c := range cyclicOperations {
+		delete(nonReflexiveOperations, c.InitiatingOperation)
 	}
 
-	setmap := make(map[string]int)
+	convergingServices := findConvergingServices(nonReflexiveOperations)
 
-	for _, s := range set {
-		setmap[s] = 1
-	}
+	for req, conv := range convergingServices {
+		for _, c := range conv {
+			services := []string{}
+			for _, e := range findConvergingPaths(c, nonReflexiveOperations[req]) {
+				services = append(services, e.From)
+			}
 
-	for _, s := range subset {
-		if count, found := setmap[s]; !found {
-			return false
-		} else if count > 1 {
-			return false
-		} else {
-			setmap[s] = count - 1
+			annotations = append(annotations, models.Annotation{
+				Services:            services,
+				InitiatingOperation: req,
+				AnnotationType:      models.InappropriateIntimacy,
+				YChartLevel:         models.OperationLevel,
+				AnnotationLevel:     models.Critical,
+				Message:             fmt.Sprintf("Services: %v should be merged.", services),
+			})
 		}
 	}
 
-	return true
+	return annotations
 }
 
-func minOf(vars ...int) int {
-	min := vars[0]
+func findConvergingServices(reqs models.Operations) map[string][]convergance {
+	targetServices := make(map[string][]convergance)
+	for req, operations := range reqs {
+		x := findConvergingService(operations)
+		if len(x) > 0 {
 
-	for _, i := range vars {
-		if min > i {
-			min = i
+			targetServices[req] = x
 		}
 	}
 
-	return min
+	return targetServices
+}
+
+func findConvergingService(operations models.Operation) []convergance {
+	targetServices := []convergance{}
+
+	incomingEdges := make(map[string]convergance)
+	for _, edge := range operations {
+		if ie, ok := incomingEdges[edge.To]; !ok {
+			incomingEdges[edge.To] = convergance{Target: edge.To, Converging: []string{edge.From}}
+		} else {
+			if existsInStringArray(edge.From, ie.Converging) {
+				continue
+			}
+			ie.Converging = append(incomingEdges[edge.To].Converging, edge.From)
+			incomingEdges[edge.To] = ie
+		}
+	}
+
+	for service, ies := range incomingEdges {
+		if len(ies.Converging) < 2 {
+			delete(incomingEdges, service)
+		} else {
+			targetServices = append(targetServices, ies)
+		}
+	}
+
+	return targetServices
+}
+
+type convergance struct {
+	Target     string
+	Converging []string
+}
+
+func existsInStringArray(target string, array []string) bool {
+	for _, a := range array {
+		if target == a {
+			return true
+		}
+	}
+	return false
 }

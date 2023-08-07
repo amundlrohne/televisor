@@ -7,7 +7,10 @@ import (
 	"github.com/amundlrohne/televisor/utils"
 )
 
-func MegaserviceRecommender(service models.TelevisorService, operation models.Operation) ([]models.TelevisorService, models.Operation) {
+func MegaserviceRecommender(services map[string]models.TelevisorService, operations models.Operations, annotation models.Annotation) (map[string]models.TelevisorService, models.Operations, models.Annotation) {
+	service := services[annotation.Services[0]]
+	operation := operations[annotation.InitiatingOperation]
+
 	ins := models.Operation{}
 	outs := models.Operation{}
 
@@ -64,5 +67,17 @@ func MegaserviceRecommender(service models.TelevisorService, operation models.Op
 		operation[k] = v
 	}
 
-	return splitServices, operation
+	splitServiceNames := []string{}
+	for _, v := range splitServices {
+		splitServiceNames = append(splitServiceNames, v.Name)
+	}
+
+	delete(services, service.Name)
+	for _, ss := range splitServices {
+		services[ss.Name] = ss
+	}
+	operations[annotation.InitiatingOperation] = operation
+	annotation.Recomendation.Message = fmt.Sprintf("Split service %s, into %s", service.Name, splitServiceNames)
+
+	return services, operations, annotation
 }

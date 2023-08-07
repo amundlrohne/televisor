@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
 	"io/ioutil"
 
 	pb "jaeger-idl/api_v2"
@@ -26,23 +25,18 @@ var (
 func main() {
 	operations, services := retrieveTelemetry()
 
-	annotations := analyze(operations, services)
+	annotations := Analyze(operations, services)
 	recommend(operations, services, annotations)
 }
 
 func recommend(operations models.Operations, services map[string]models.TelevisorService, annotations []models.Annotation) {
-	for _, a := range annotations {
+	for i, a := range annotations {
 		if a.AnnotationType == models.Megaservice {
-			ss, o := recommenders.MegaserviceRecommender(services[a.Services[0]], operations[a.InitiatingOperation])
-			delete(services, a.Services[0])
-			for _, v := range ss {
-				services[v.Name] = v
-			}
-			operations[a.InitiatingOperation] = o
+			services, operations, annotations[i] = recommenders.MegaserviceRecommender(services, operations, a)
 		}
 
 		if a.AnnotationType == models.InappropriateIntimacy {
-			services, operations = recommenders.InappropriateIntimacyRecommender(services, operations, a.InitiatingOperation, a.Services)
+			services, operations, annotations[i] = recommenders.InappropriateIntimacyRecommender(services, operations, a)
 		}
 	}
 
@@ -86,31 +80,35 @@ func retrieveTelemetry() (models.Operations, map[string]models.TelevisorService)
 	return operations, services
 }
 
-func analyze(operations models.Operations, services map[string]models.TelevisorService) []models.Annotation {
+func Analyze(operations models.Operations, services map[string]models.TelevisorService) []models.Annotation {
 
 	annotations := []models.Annotation{}
 
-	fmt.Printf("Services %+v \n", services)
+	// fmt.Printf("Services %+v \n", services)
 
 	megaservices := annotators.MegaserviceAnnotator(operations)
 	annotations = append(annotations, megaservices...)
-	fmt.Printf("Megaservices: %+v \n", megaservices)
-
-	innapropriateIntimacy := annotators.InappropriateIntimacyServiceAnnotator(operations)
-	annotations = append(annotations, innapropriateIntimacy...)
-	fmt.Printf("Innapropriate Intimacy: %+v \n", innapropriateIntimacy)
-
-	criticality := annotators.AbsoluteCriticalService(services)
-	annotations = append(annotations, criticality)
-	fmt.Printf("Criticality %+v \n", criticality)
-
-	dependence := annotators.AbsoluteDependenceService(services)
-	annotations = append(annotations, dependence)
-	fmt.Printf("Dependence %+v \n", dependence)
+	// fmt.Printf("Megaservices: %+v \n", megaservices)
 
 	cycles := annotators.CyclicDependencyAnnotator(operations, services)
 	annotations = append(annotations, cycles...)
-	fmt.Printf("Cycles %+v \n", cycles)
+	// fmt.Printf("Cycles %+v \n", cycles)
+
+	innapropriateIntimacy := annotators.InappropriateIntimacyServiceAnnotator(operations, cycles)
+	annotations = append(annotations, innapropriateIntimacy...)
+	// fmt.Printf("Innapropriate Intimacy: %+v \n", innapropriateIntimacy)
+
+	greedy := annotators.GreedyServiceAnnotator(operations, services)
+	annotations = append(annotations, greedy...)
+	// fmt.Printf("Greedy %+v \n", greedy)
+
+	criticality := annotators.AbsoluteCriticalService(services)
+	annotations = append(annotations, criticality)
+	// fmt.Printf("Criticality %+v \n", criticality)
+
+	dependence := annotators.AbsoluteDependenceService(services)
+	annotations = append(annotations, dependence)
+	// fmt.Printf("Dependence %+v \n", dependence)
 
 	yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
 	file, _ := json.MarshalIndent(yCharModel, "", " ")

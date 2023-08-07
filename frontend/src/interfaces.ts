@@ -18,16 +18,21 @@ export interface IEdge {
     count: number;
 }
 
-export interface IAnnotation { 
+export interface IAnnotation {
     services: string[];
     operations: string[] | null;
     message: string;
     annotationType: string;
     yChartLevel: string;
+    recommendation?: IRecommendation;
+}
+
+export interface IRecommendation {
+    message: string;
 }
 
 export interface IServices {
-    [key: string]: IService
+    [key: string]: IService;
 }
 
 export interface IService {
