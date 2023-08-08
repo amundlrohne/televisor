@@ -97,13 +97,13 @@ func ServiceUtilizationGenerator(services map[string]models.TelevisorService) ma
 	}
 
 	if r, ok := result["service-j"]; ok {
-		r.Cpu = models.Utilization{Quantile: 0.09, Mean: 0.6, Stdev: 0.0007}
+		r.Cpu = models.Utilization{Quantile: 0.09, Mean: 0.06, Stdev: 0.0007}
 		r.Memory = models.Utilization{Quantile: 0.10, Mean: 0.3, Stdev: 0.0002}
 		result["service-j"] = r
 	}
 
 	if r, ok := result["service-k"]; ok {
-		r.Cpu = models.Utilization{Quantile: 0.09, Mean: 0.6, Stdev: 0.0007}
+		r.Cpu = models.Utilization{Quantile: 0.09, Mean: 0.06, Stdev: 0.0007}
 		r.Memory = models.Utilization{Quantile: 0.10, Mean: 0.3, Stdev: 0.0002}
 		result["service-k"] = r
 	}

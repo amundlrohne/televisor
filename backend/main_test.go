@@ -155,6 +155,14 @@ func TestRecommendationEngine(t *testing.T) {
 
 	annotations = Analyze(operations, services)
 
+	for i, a := range annotations {
+		if a.AnnotationType == models.Cyclic {
+			services, operations, annotations[i] = recommenders.CyclicRecommender(services, operations, a)
+		}
+	}
+
+	annotations = Analyze(operations, services)
+
 	yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
 	file, _ := json.MarshalIndent(yCharModel, "", "    ")
 	_ = ioutil.WriteFile("../y-chart-recommendation.json", file, 0644)

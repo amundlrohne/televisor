@@ -115,5 +115,4 @@ func Analyze(operations models.Operations, services map[string]models.TelevisorS
 	_ = ioutil.WriteFile("../y-chart.json", file, 0644)
 
 	return annotations
-
 }
