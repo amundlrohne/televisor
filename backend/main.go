@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"io/ioutil"
+    "os"
 
 	pb "jaeger-idl/api_v2"
 
@@ -24,7 +24,6 @@ var (
 
 func main() {
 	operations, services := retrieveTelemetry()
-
 	annotations := Analyze(operations, services)
 	recommend(operations, services, annotations)
 }
@@ -42,7 +41,7 @@ func recommend(operations models.Operations, services map[string]models.Televiso
 
 	yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
 	file, _ := json.MarshalIndent(yCharModel, "", " ")
-	_ = ioutil.WriteFile("../y-chart-recommendation.json", file, 0644)
+	_ = os.WriteFile("../y-chart-recommendation.json", file, 0644)
 
 }
 
@@ -112,7 +111,7 @@ func Analyze(operations models.Operations, services map[string]models.TelevisorS
 
 	yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
 	file, _ := json.MarshalIndent(yCharModel, "", " ")
-	_ = ioutil.WriteFile("../y-chart.json", file, 0644)
+	_ = os.WriteFile("../y-chart.json", file, 0644)
 
 	return annotations
 }

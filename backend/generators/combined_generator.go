@@ -55,8 +55,8 @@ func ServiceUtilizationGenerator(services map[string]models.TelevisorService) ma
 	}
 
 	if r, ok := result["service-c"]; ok {
-		r.Cpu = models.Utilization{Quantile: 0.18, Mean: 0.14, Stdev: 0.0022}
-		r.Memory = models.Utilization{Quantile: 0.32, Mean: 0.23, Stdev: 0.0009}
+		r.Cpu = models.Utilization{Quantile: 0.07, Mean: 0.1, Stdev: 0.0022}
+		r.Memory = models.Utilization{Quantile: 0.24, Mean: 0.15, Stdev: 0.0009}
 		result["service-c"] = r
 	}
 
