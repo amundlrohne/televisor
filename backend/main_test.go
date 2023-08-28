@@ -127,7 +127,7 @@ func TestPrintToJSON(t *testing.T) {
 
 	file, _ := json.MarshalIndent(yCharModel, "", " ")
 
-	_ = os.WriteFile("../y-chart-test.json", file, 0644)
+	_ = os.WriteFile("../frontend/src/y-chart.json", file, 0644)
 }
 
 func TestRecommendationEngine(t *testing.T) {
@@ -165,6 +165,6 @@ func TestRecommendationEngine(t *testing.T) {
 
 	yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
 	file, _ := json.MarshalIndent(yCharModel, "", "    ")
-	_ = os.WriteFile("../y-chart-recommendation.json", file, 0644)
+	_ = os.WriteFile("../frontend/src/y-chart-recommendation.json", file, 0644)
 
 }

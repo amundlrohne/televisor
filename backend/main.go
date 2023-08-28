@@ -102,16 +102,16 @@ func Analyze(operations models.Operations, services map[string]models.TelevisorS
 	// fmt.Printf("Greedy %+v \n", greedy)
 
 	criticality := annotators.AbsoluteCriticalService(services)
-	annotations = append(annotations, criticality)
+	annotations = append(annotations, criticality...)
 	// fmt.Printf("Criticality %+v \n", criticality)
 
 	dependence := annotators.AbsoluteDependenceService(services)
-	annotations = append(annotations, dependence)
-	// fmt.Printf("Dependence %+v \n", dependence)
+    annotations = append(annotations, dependence...)
+    // fmt.Printf("Dependence %+v \n", dependence)
 
-	yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
-	file, _ := json.MarshalIndent(yCharModel, "", " ")
-	_ = os.WriteFile("../y-chart.json", file, 0644)
+    yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
+    file, _ := json.MarshalIndent(yCharModel, "", " ")
+    _ = os.WriteFile("../y-chart.json", file, 0644)
 
 	return annotations
 }

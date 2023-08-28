@@ -32,8 +32,9 @@ func GreedyServiceAnnotator(operations models.Operations, services map[string]mo
 		}
 	}
 
+    // Move utils check to recommendation engine
 	for service, operations := range serviceDegrees {
-		if len(operations) == 1 && serviceUtilsIsAcceptable(services[service]) {
+		if len(operations) == 1 && serviceUtilsIsAcceptable(services[service]) && len(services[service].Dependencies) == 1 {
 			annotations = append(annotations, models.Annotation{
 				Services:            []string{service},
 				Operations:          []string{operations[0].Operation},

@@ -7,7 +7,7 @@ import (
 	"github.com/amundlrohne/televisor/models"
 )
 
-func AbsoluteDependenceService(services map[string]models.TelevisorService) models.Annotation {
+func AbsoluteDependenceService(services map[string]models.TelevisorService) []models.Annotation {
 	keys := make([]string, 0, len(services))
 
 	for key := range services {
@@ -18,12 +18,26 @@ func AbsoluteDependenceService(services map[string]models.TelevisorService) mode
 		return len(services[keys[i]].Dependencies) < len(services[keys[j]].Dependencies)
 	})
 
-	dependenceService := services[keys[len(keys)-1]]
+    //	dependenceService := services[keys[len(keys)-1]]
 
-	return models.Annotation{
-		Services:       []string{dependenceService.Name},
-		AnnotationType: models.Dependence,
-		YChartLevel:    models.ServiceLevel,
-		Message:        fmt.Sprintf("Service %s has %v dependencies", dependenceService.Name, len(dependenceService.Dependencies)),
-	}
+    annotations :=  []models.Annotation{}
+
+    for _, k := range keys[len(keys)-4:len(keys)-1] {
+        service := services[k]
+        annotations = append(annotations, models.Annotation{
+            Services:       []string{service.Name},
+            AnnotationType: models.Dependence,
+            YChartLevel:    models.ServiceLevel,
+            Message:        fmt.Sprintf("Service %s has %v dependencies", service.Name, len(service.Dependencies)),
+        })
+    }
+
+    return annotations
+
+	//return models.Annotation{
+	//	Services:       []string{dependenceService.Name},
+	//	AnnotationType: models.Dependence,
+	//	YChartLevel:    models.ServiceLevel,
+	//	Message:        fmt.Sprintf("Service %s has %v dependencies", dependenceService.Name, len(dependenceService.Dependencies)),
+	//}
 }
