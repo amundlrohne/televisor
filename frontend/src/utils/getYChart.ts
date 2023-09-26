@@ -49,7 +49,7 @@ export const getFlowChart = (ychart: IYChart) => {
           markerEnd: {
             type: MarkerType.Arrow,
           },
-          label: kk,
+          label: edge.name,
         });
       }
     });

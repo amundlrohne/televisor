@@ -22,7 +22,7 @@ const ServiceNode = ({ data }: IProps) => {
 
       <div
         style={{
-          backgroundColor: `hsl(${100 - data.cpu.quantile * 100}, 100%, 50%)`,
+          backgroundColor: `hsl(${100 - data.cpu.quantile}, 100%, 50%)`,
           border: "black solid 1px",
           padding: "0.5em",
           borderRadius: "0.5em",
@@ -38,14 +38,14 @@ const ServiceNode = ({ data }: IProps) => {
           </tr>
           <tr>
             <th>CPU</th>
-            <td>{(data.cpu.mean * 100).toFixed(2)}%</td>
-            <td>{(data.cpu.quantile * 100).toFixed(2)}%</td>
+            <td>{data.cpu.mean.toFixed(2)}%</td>
+            <td>{data.cpu.quantile.toFixed(2)}%</td>
             <td>{data.cpu.stdev.toFixed(4)}</td>
           </tr>
           <tr>
             <th>Memory</th>
-            <td>{(data.memory.mean * 100).toFixed(2)}%</td>
-            <td>{(data.memory.quantile * 100).toFixed(2)}%</td>
+            <td>{data.memory.mean.toFixed(2)}%</td>
+            <td>{data.memory.quantile.toFixed(2)}%</td>
             <td>{data.memory.stdev.toFixed(4)}</td>
           </tr>
         </table>

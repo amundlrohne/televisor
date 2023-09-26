@@ -17,32 +17,60 @@ import (
 
 var (
 	jaeger_addr = flag.String("jaeger_addr", "localhost:16685", "jaeger address to connect to")
-	api_gateway = flag.String("api_gateway", "nginx-web-server", "api gateway in microservice application")
+	api_gateway = flag.String("api_gateway", "nginx", "api gateway in microservice application")
 	cpu_req     = flag.Float64("cpu_req", 0.6, "cpu utilization requirement")
 	mem_req     = flag.Float64("mem_req", 0.2, "memory utilization requirement")
 )
 
 func main() {
 	operations, services := retrieveTelemetry()
+    yCharModel := models.YChartModel{Annotations: []models.Annotation{}, Operations: operations, Services: services}
+    file, _ := json.MarshalIndent(yCharModel, "", " ")
+    _ = os.WriteFile("../frontend/src/y-chart-unannotated.json", file, 0644)
+
 	annotations := Analyze(operations, services)
+    yCharModel = models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
+    file, _ = json.MarshalIndent(yCharModel, "", " ")
+    _ = os.WriteFile("../frontend/src/y-chart.json", file, 0644)
 	recommend(operations, services, annotations)
 }
 
 func recommend(operations models.Operations, services map[string]models.TelevisorService, annotations []models.Annotation) {
-	for i, a := range annotations {
+    for i, a := range annotations {
 		if a.AnnotationType == models.Megaservice {
 			services, operations, annotations[i] = recommenders.MegaserviceRecommender(services, operations, a)
 		}
+	}
 
+	annotations = Analyze(operations, services)
+
+	for i, a := range annotations {
 		if a.AnnotationType == models.InappropriateIntimacy {
 			services, operations, annotations[i] = recommenders.InappropriateIntimacyRecommender(services, operations, a)
 		}
 	}
 
-	yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
-	file, _ := json.MarshalIndent(yCharModel, "", " ")
-	_ = os.WriteFile("../y-chart-recommendation.json", file, 0644)
+	annotations = Analyze(operations, services)
 
+	for i, a := range annotations {
+		if a.AnnotationType == models.Greedy {
+			services, operations, annotations[i] = recommenders.GreedyServiceRecommender(services, operations, a)
+		}
+	}
+
+	annotations = Analyze(operations, services)
+
+	for i, a := range annotations {
+		if a.AnnotationType == models.Cyclic {
+			services, operations, annotations[i] = recommenders.CyclicRecommender(services, operations, a)
+		}
+	}
+
+	annotations = Analyze(operations, services)
+
+	yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
+	file, _ := json.MarshalIndent(yCharModel, "", "    ")
+	_ = os.WriteFile("../frontend/src/y-chart-recommendation.json", file, 0644)
 }
 
 func retrieveTelemetry() (models.Operations, map[string]models.TelevisorService) {
@@ -101,17 +129,13 @@ func Analyze(operations models.Operations, services map[string]models.TelevisorS
 	annotations = append(annotations, greedy...)
 	// fmt.Printf("Greedy %+v \n", greedy)
 
-	criticality := annotators.AbsoluteCriticalService(services)
-	annotations = append(annotations, criticality...)
-	// fmt.Printf("Criticality %+v \n", criticality)
-
-	dependence := annotators.AbsoluteDependenceService(services)
-    annotations = append(annotations, dependence...)
+//	criticality := annotators.AbsoluteCriticalService(services)
+//	annotations = append(annotations, criticality...)
+//	// fmt.Printf("Criticality %+v \n", criticality)
+//
+//	dependence := annotators.AbsoluteDependenceService(services)
+//    annotations = append(annotations, dependence...)
     // fmt.Printf("Dependence %+v \n", dependence)
-
-    yCharModel := models.YChartModel{Annotations: annotations, Operations: operations, Services: services}
-    file, _ := json.MarshalIndent(yCharModel, "", " ")
-    _ = os.WriteFile("../y-chart.json", file, 0644)
 
 	return annotations
 }

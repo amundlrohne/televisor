@@ -1,0 +1,648 @@
+{
+ "annotations": [],
+ "services": {
+  "cast-info-service": {
+   "name": "cast-info-service",
+   "dependents": null,
+   "dependencies": [
+    "nginx"
+   ],
+   "cpu": {
+    "quantile": 19.99873836379506,
+    "mean": 1.1717222869487112,
+    "stdev": 0.04632442871879122
+   },
+   "memory": {
+    "quantile": 0.1623390134254304,
+    "mean": 0.097401281138816,
+    "stdev": 0.00022555922679333779
+   },
+   "network": {
+    "quantile": 0,
+    "mean": 0,
+    "stdev": 0
+   }
+  },
+  "compose-review-service": {
+   "name": "compose-review-service",
+   "dependents": [
+    "user-review-service",
+    "movie-review-service",
+    "review-storage-service"
+   ],
+   "dependencies": [
+    "rating-service",
+    "user-service",
+    "unique-id-service",
+    "movie-id-service",
+    "text-service"
+   ],
+   "cpu": {
+    "quantile": 11.708068977146224,
+    "mean": 2.5672355431938065,
+    "stdev": 0.045576798081659174
+   },
+   "memory": {
+    "quantile": 0.08234053291204824,
+    "mean": 0.07746645580521641,
+    "stdev": 0.000048932466617229846
+   },
+   "network": {
+    "quantile": 0,
+    "mean": 0,
+    "stdev": 0
+   }
+  },
+  "movie-id-service": {
+   "name": "movie-id-service",
+   "dependents": [
+    "rating-service",
+    "compose-review-service"
+   ],
+   "dependencies": [
+    "nginx"
+   ],
+   "cpu": {
+    "quantile": 5.63179890888717,
+    "mean": 1.4197594733216827,
+    "stdev": 0.021394996562858887
+   },
+   "memory": {
+    "quantile": 0.11636534970377996,
+    "mean": 0.09686955202825698,
+    "stdev": 0.00012868552195743956
+   },
+   "network": {
+    "quantile": 0,
+    "mean": 0,
+    "stdev": 0
+   }
+  },
+  "movie-info-service": {
+   "name": "movie-info-service",
+   "dependents": null,
+   "dependencies": [
+    "nginx"
+   ],
+   "cpu": {
+    "quantile": 2.4083425774333933,
+    "mean": 0.08504511393218202,
+    "stdev": 0.004488674748446849
+   },
+   "memory": {
+    "quantile": 0.10287543689230516,
+    "mean": 0.08603522937931936,
+    "stdev": 0.00010773160407471563
+   },
+   "network": {
+    "quantile": 0,
+    "mean": 0,
+    "stdev": 0
+   }
+  },
+  "movie-review-service": {
+   "name": "movie-review-service",
+   "dependents": null,
+   "dependencies": [
+    "compose-review-service"
+   ],
+   "cpu": {
+    "quantile": 3.696022946846039,
+    "mean": 0.7666032853305947,
+    "stdev": 0.013525645498209516
+   },
+   "memory": {
+    "quantile": 0.03271352537813989,
+    "mean": 0.03088589125209391,
+    "stdev": 0.000026149248833967405
+   },
+   "network": {
+    "quantile": 0,
+    "mean": 0,
+    "stdev": 0
+   }
+  },
+  "nginx": {
+   "name": "nginx",
+   "dependents": [
+    "movie-id-service",
+    "text-service",
+    "user-service",
+    "cast-info-service",
+    "unique-id-service",
+    "plot-service",
+    "movie-info-service"
+   ],
+   "dependencies": null,
+   "cpu": {
+    "quantile": 54.788409554914566,
+    "mean": 0.005904346653904071,
+    "stdev": 0.10846616718025326
+   },
+   "memory": {
+    "quantile": 0.19671758968562272,
+    "mean": 0.5502712251690828,
+    "stdev": 0
+   },
+   "network": {
+    "quantile": 0,
+    "mean": 0,
+    "stdev": 0
+   }
+  },
+  "plot-service": {
+   "name": "plot-service",
+   "dependents": null,
+   "dependencies": [
+    "nginx"
+   ],
+   "cpu": {
+    "quantile": 2.255096472351759,
+    "mean": 0.08023881380877312,
+    "stdev": 0.004199075294729181
+   },
+   "memory": {
+    "quantile": 0.06240225088320164,
+    "mean": 0.046931706418586,
+    "stdev": 0.00007426013011618563
+   },
+   "network": {
+    "quantile": 0,
+    "mean": 0,
+    "stdev": 0
+   }
+  },
+  "rating-service": {
+   "name": "rating-service",
+   "dependents": [
+    "compose-review-service"
+   ],
+   "dependencies": [
+    "movie-id-service"
+   ],
+   "cpu": {
+    "quantile": 4.120556085764085,
+    "mean": 0.9000496765456197,
+    "stdev": 0.015622994554029645
+   },
+   "memory": {
+    "quantile": 0.06323745777120043,
+    "mean": 0.05624745450649314,
+    "stdev": 0.00014431094061076303
+   },
+   "network": {
+    "quantile": 0,
+    "mean": 0,
+    "stdev": 0
+   }
+  },
+  "review-storage-service": {
+   "name": "review-storage-service",
+   "dependents": null,
+   "dependencies": [
+    "compose-review-service"
+   ],
+   "cpu": {
+    "quantile": 1.493392463630858,
+    "mean": 0.3176365335814746,
+    "stdev": 0.005521834538786437
+   },
+   "memory": {
+    "quantile": 0.03377020701728289,
+    "mean": 0.03284954952830931,
+    "stdev": 0.000017287617295106164
+   },
+   "network": {
+    "quantile": 0,
+    "mean": 0,
+    "stdev": 0
+   }
+  },
+  "text-service": {
+   "name": "text-service",
+   "dependents": [
+    "compose-review-service"
+   ],
+   "dependencies": [
+    "nginx"
+   ],
+   "cpu": {
+    "quantile": 1.2822633638235175,
+    "mean": 0.00031821016410352545,
+    "stdev": 0.000001942640294457961
+   },
+   "memory": {
+    "quantile": 0.024988404337942763,
+    "mean": 0.0233094354692229,
+    "stdev": 0
+   },
+   "network": {
+    "quantile": 0,
+    "mean": 0,
+    "stdev": 0
+   }
+  },
+  "unique-id-service": {
+   "name": "unique-id-service",
+   "dependents": [
+    "compose-review-service"
+   ],
+   "dependencies": [
+    "nginx"
+   ],
+   "cpu": {
+    "quantile": 0.0005508845017183502,
+    "mean": 0.00020439005167996972,
+    "stdev": 0.005853943951962054
+   },
+   "memory": {
+    "quantile": 0.018195533028563474,
+    "mean": 0.06456358834882105,
+    "stdev": 0
+   },
+   "network": {
+    "quantile": 0,
+    "mean": 0,
+    "stdev": 0
+   }
+  },
+  "user-review-service": {
+   "name": "user-review-service",
+   "dependents": null,
+   "dependencies": [
+    "compose-review-service"
+   ],
+   "cpu": {
+    "quantile": 3.689767356969891,
+    "mean": 0.7772057028132632,
+    "stdev": 0.013636462515739304
+   },
+   "memory": {
+    "quantile": 0.03274870340866178,
+    "mean": 0.031360160784668,
+    "stdev": 0.000028103597148038433
+   },
+   "network": {
+    "quantile": 0,
+    "mean": 0,
+    "stdev": 0
+   }
+  },
+  "user-service": {
+   "name": "user-service",
+   "dependents": [
+    "compose-review-service"
+   ],
+   "dependencies": [
+    "nginx"
+   ],
+   "cpu": {
+    "quantile": 0.004887865811029551,
+    "mean": 0.003115363592397645,
+    "stdev": 0.01115865857859531
+   },
+   "memory": {
+    "quantile": 0.03679953981262431,
+    "mean": 0.02838092726898867,
+    "stdev": 0.000031982418176595375
+   },
+   "network": {
+    "quantile": 0,
+    "mean": 0,
+    "stdev": 0
+   }
+  }
+ },
+ "operations": {
+  "/wrk2-api/cast-info/write": {
+   "1717a802c308fa76": {
+    "from": "nginx",
+    "to": "cast-info-service",
+    "count": 2,
+    "name": "WriteCastInfo"
+   },
+   "202d3cb3e546b0e3": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 2,
+    "name": "/wrk2-api/cast-info/write"
+   },
+   "4b1237d06be8899d": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 1,
+    "name": "/wrk2-api/cast-info/write"
+   },
+   "8f51684f7a0791af": {
+    "from": "cast-info-service",
+    "to": "cast-info-service",
+    "count": 2,
+    "name": "MongoInsertCastInfo"
+   },
+   "e489b929aedab6e8": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 2,
+    "name": "WriteCastInfo  "
+   }
+  },
+  "/wrk2-api/movie-info/write": {
+   "4e33e46cf9aeea50": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 2,
+    "name": "WriteMovieInfo"
+   },
+   "65aed358a567da85": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 2,
+    "name": "/wrk2-api/movie-info/write"
+   },
+   "767dff614c9ebc69": {
+    "from": "nginx",
+    "to": "movie-info-service",
+    "count": 2,
+    "name": "WriteMovieInfo"
+   },
+   "8d72f006b3ac8bf3": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 1,
+    "name": "/wrk2-api/movie-info/write"
+   },
+   "feb6e35aba5712cd": {
+    "from": "movie-info-service",
+    "to": "movie-info-service",
+    "count": 2,
+    "name": "MongoInsertMovieInfo"
+   }
+  },
+  "/wrk2-api/movie/register": {
+   "0770fc9943547a50": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 2,
+    "name": "/wrk2-api/movie/register"
+   },
+   "2ae4864fd0f12e98": {
+    "from": "movie-id-service",
+    "to": "movie-id-service",
+    "count": 2,
+    "name": "MongoFindMovie"
+   },
+   "51a9ed15dc386faa": {
+    "from": "nginx",
+    "to": "movie-id-service",
+    "count": 2,
+    "name": "RegisterMovieId"
+   },
+   "5c10a468962aa9b9": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 2,
+    "name": "RegisterMovie"
+   },
+   "929c6c8fefd990ce": {
+    "from": "movie-id-service",
+    "to": "movie-id-service",
+    "count": 2,
+    "name": "MongoInsertMovie"
+   },
+   "ee85633f59fc1ce8": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 1,
+    "name": "/wrk2-api/movie/register"
+   }
+  },
+  "/wrk2-api/plot/write": {
+   "034268e450a28bc1": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 2,
+    "name": "/wrk2-api/plot/write"
+   },
+   "2174a45f21d96c6f": {
+    "from": "nginx",
+    "to": "plot-service",
+    "count": 2,
+    "name": "WritePlot"
+   },
+   "37b42d927c20f6b1": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 2,
+    "name": "WritePlot  "
+   },
+   "81cf4faf091d4824": {
+    "from": "plot-service",
+    "to": "plot-service",
+    "count": 2,
+    "name": "MongoInsertPlot"
+   },
+   "c437e7b4a99dbc0a": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 1,
+    "name": "/wrk2-api/plot/write"
+   }
+  },
+  "/wrk2-api/review/compose": {
+   "0a417817f7d79ad2": {
+    "from": "text-service",
+    "to": "compose-review-service",
+    "count": 2,
+    "name": "UploadText"
+   },
+   "0da9c56a125dd4ac": {
+    "from": "movie-id-service",
+    "to": "movie-id-service",
+    "count": 2,
+    "name": "MmcSetMovieId"
+   },
+   "0e3dc2df0355e64e": {
+    "from": "compose-review-service",
+    "to": "review-storage-service",
+    "count": 2,
+    "name": "StoreReview"
+   },
+   "1ad982f36c359ac8": {
+    "from": "rating-service",
+    "to": "rating-service",
+    "count": 2,
+    "name": "RedisInsert"
+   },
+   "1b76b9dcc7b0e9af": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 2,
+    "name": "/wrk2-api/review/compose"
+   },
+   "1e03461b4d720d99": {
+    "from": "user-service",
+    "to": "user-service",
+    "count": 2,
+    "name": "MmcGetUserId"
+   },
+   "2ccb54dbb7f33c5e": {
+    "from": "nginx",
+    "to": "unique-id-service",
+    "count": 2,
+    "name": "UploadUniqueId"
+   },
+   "332c10217aac55b6": {
+    "from": "rating-service",
+    "to": "compose-review-service",
+    "count": 2,
+    "name": "UploadRating"
+   },
+   "388ff8d93d6e8a19": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 2,
+    "name": "ComposeReview"
+   },
+   "397fb54adaa555a2": {
+    "from": "review-storage-service",
+    "to": "review-storage-service",
+    "count": 2,
+    "name": "MongoInsertReview"
+   },
+   "3afa6dd3fca3eac0": {
+    "from": "compose-review-service",
+    "to": "movie-review-service",
+    "count": 2,
+    "name": "UploadMovieReview"
+   },
+   "40a4472f6f2b0286": {
+    "from": "user-review-service",
+    "to": "user-review-service",
+    "count": 2,
+    "name": "RedisUpdate"
+   },
+   "423bf43213e8c980": {
+    "from": "movie-review-service",
+    "to": "movie-review-service",
+    "count": 2,
+    "name": "MongoUpdate."
+   },
+   "5696bc95f10f05ac": {
+    "from": "unique-id-service",
+    "to": "compose-review-service",
+    "count": 2,
+    "name": "UploadUniqueId"
+   },
+   "67c68683ba1b54d8": {
+    "from": "compose-review-service",
+    "to": "user-review-service",
+    "count": 2,
+    "name": "UploadUserReview"
+   },
+   "79ae2cf8f5cb6a92": {
+    "from": "movie-id-service",
+    "to": "compose-review-service",
+    "count": 2,
+    "name": "UploadMovieId"
+   },
+   "85009ac39fdb26e7": {
+    "from": "user-review-service",
+    "to": "user-review-service",
+    "count": 2,
+    "name": "MongoFindUser"
+   },
+   "85815d8d9d0aae7a": {
+    "from": "nginx",
+    "to": "text-service",
+    "count": 2,
+    "name": "UploadText"
+   },
+   "8f69f465af5d3458": {
+    "from": "user-review-service",
+    "to": "user-review-service",
+    "count": 2,
+    "name": "MongoUpdate"
+   },
+   "94b30f614bce6bc1": {
+    "from": "nginx",
+    "to": "user-service",
+    "count": 2,
+    "name": "UploadUserWithUsername"
+   },
+   "99c6a5d51e31a960": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 1,
+    "name": "/wrk2-api/review/compose"
+   },
+   "a240fa3b14a928d8": {
+    "from": "movie-review-service",
+    "to": "movie-review-service",
+    "count": 2,
+    "name": "RedisUpdate"
+   },
+   "a43002b82879066a": {
+    "from": "user-service",
+    "to": "compose-review-service",
+    "count": 2,
+    "name": "UploadUserId"
+   },
+   "ac959ca50ddffc9a": {
+    "from": "movie-id-service",
+    "to": "rating-service",
+    "count": 2,
+    "name": "UploadRating"
+   },
+   "bb0d181c204058b5": {
+    "from": "movie-review-service",
+    "to": "movie-review-service",
+    "count": 2,
+    "name": "MongoFindMovie"
+   },
+   "c92c7f518c25a624": {
+    "from": "nginx",
+    "to": "movie-id-service",
+    "count": 2,
+    "name": "UploadMovieId"
+   },
+   "ed885f6b1c38e0f5": {
+    "from": "movie-id-service",
+    "to": "movie-id-service",
+    "count": 2,
+    "name": "MmcGetMovieId"
+   }
+  },
+  "/wrk2-api/user/register": {
+   "0668da89665b9f3f": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 2,
+    "name": "RegisterUser"
+   },
+   "1ae9448d8299e141": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 1,
+    "name": "/wrk2-api/user/register"
+   },
+   "6d09665b0c913412": {
+    "from": "nginx",
+    "to": "nginx",
+    "count": 2,
+    "name": "/wrk2-api/user/register"
+   },
+   "86e193ac018daf1b": {
+    "from": "nginx",
+    "to": "user-service",
+    "count": 2,
+    "name": "RegisterUser"
+   },
+   "8a9c1f42564d7829": {
+    "from": "user-service",
+    "to": "user-service",
+    "count": 2,
+    "name": "MongoInsertUser"
+   }
+  }
+ }
+}

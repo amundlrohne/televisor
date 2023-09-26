@@ -59,7 +59,7 @@ func JaegerOperations(qsc pb.QueryServiceClient, service string) []string {
 }
 
 func JaegerTraces(qsc pb.QueryServiceClient, service string, operation string) []model.Span {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
 	defer cancel()
 
 	request := &pb.FindTracesRequest{Query: &pb.TraceQueryParameters{
@@ -97,7 +97,7 @@ func JaegerTraces(qsc pb.QueryServiceClient, service string, operation string) [
 }
 
 func JaegerTrace(qsc pb.QueryServiceClient, traceId model.TraceID) []model.Span {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
 	defer cancel()
 
 	request := &pb.GetTraceRequest{TraceID: traceId}

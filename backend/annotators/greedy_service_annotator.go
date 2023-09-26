@@ -13,6 +13,7 @@ func GreedyServiceAnnotator(operations models.Operations, services map[string]mo
 	annotations := []models.Annotation{}
 
 	serviceDegrees := make(map[string][]requestOperationTuple)
+    operations = operations.ClearReflexiveEdges()
 
 	for rootKey, rootOperations := range operations {
 		for opK, op := range rootOperations {
@@ -50,11 +51,11 @@ func GreedyServiceAnnotator(operations models.Operations, services map[string]mo
 }
 
 func serviceUtilsIsAcceptable(service models.TelevisorService) bool {
-	if service.Cpu.Quantile >= 0.15 {
+	if service.Cpu.Quantile >= 15 {
 		return false
 	}
 
-	if service.Memory.Quantile >= 0.2 {
+	if service.Memory.Quantile >= 20 {
 		return false
 	}
 

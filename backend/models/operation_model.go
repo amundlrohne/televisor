@@ -4,6 +4,7 @@ type OperationEdge struct {
 	From  string `json:"from"`
 	To    string `json:"to"`
 	Count int    `json:"count"`
+    Name  string `json:"name"`
 }
 
 type Operations map[string]Operation

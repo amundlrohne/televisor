@@ -43,12 +43,14 @@ func ExtractServicesFromSDG(sdg []models.OperationEdge) map[string]models.Televi
 func GetSubSDGs(qsc pb.QueryServiceClient, service string) models.Operations {
 	operations := queries.JaegerOperations(qsc, service)
 
+    //fmt.Println(operations)
 	result := make(models.Operations)
 	spanIDToService := make(map[string]string)
 
 	for _, o := range operations {
 		traces := queries.JaegerTraces(qsc, service, o)
-		//fmt.Printf("Number of traces for operation %v is %v \n", o, len(traces))
+        //fmt.Printf("Number of traces for operation %v is %v \n", o, len(traces))
+        //fmt.Println(traces)
 		root, err := getRootSpan(traces)
 		if err != nil {
 			fmt.Printf("could not find root span for operation: %v \n", o)
@@ -59,7 +61,8 @@ func GetSubSDGs(qsc pb.QueryServiceClient, service string) models.Operations {
 		if _, ok := result[root.OperationName]; !ok {
 			result[root.OperationName] = make(map[string]models.OperationEdge)
 
-			result[root.OperationName][root.OperationName] = models.OperationEdge{
+			result[root.OperationName][root.SpanID.String()] = models.OperationEdge{
+                Name:  root.OperationName,
 				From:  root.Process.ServiceName,
 				To:    root.Process.ServiceName,
 				Count: 1,
@@ -81,13 +84,14 @@ func GetSubSDGs(qsc pb.QueryServiceClient, service string) models.Operations {
 				continue
 			}
 
-			if path, ok := result[root.OperationName][t.OperationName]; ok {
+			if path, ok := result[root.OperationName][t.SpanID.String()]; ok {
 				path.Count++
-				result[root.OperationName][t.OperationName] = path
+				result[root.OperationName][t.SpanID.String()] = path
 			} else {
 				fromService := spanIDToService[reference]
 
-				result[root.OperationName][t.OperationName] = models.OperationEdge{
+				result[root.OperationName][t.SpanID.String()] = models.OperationEdge{
+                    Name:  t.OperationName,
 					From:  fromService,
 					To:    t.Process.ServiceName,
 					Count: 1,

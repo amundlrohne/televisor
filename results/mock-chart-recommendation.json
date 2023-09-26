@@ -1,0 +1,467 @@
+{
+    "annotations": [
+        {
+            "services": [
+                "service-k"
+            ],
+            "operations": [
+                "op3-subop3"
+            ],
+            "initiatingOperation": "operation-cyclic",
+            "message": "Service service-k, only has a single operation ([{operation-cyclic op3-subop3}]). Potential Greedy service as utils are under requirements.",
+            "annotationType": "GREEDY",
+            "yChartLevel": "",
+            "annotationLevel": "INFO",
+            "recommendation": {
+                "message": ""
+            }
+        },
+        {
+            "services": [
+                "service-l/service-m"
+            ],
+            "operations": [
+                "op4-subop1"
+            ],
+            "initiatingOperation": "operation-greedy",
+            "message": "Service service-l/service-m, only has a single operation ([{operation-greedy op4-subop1}]). Potential Greedy service as utils are under requirements.",
+            "annotationType": "GREEDY",
+            "yChartLevel": "",
+            "annotationLevel": "INFO",
+            "recommendation": {
+                "message": ""
+            }
+        },
+        {
+            "services": [
+                "service-k"
+            ],
+            "operations": null,
+            "initiatingOperation": "",
+            "message": "Service service-k has 1 dependents and 1 dependencies",
+            "annotationType": "CRITICALITY",
+            "yChartLevel": "SERVICE",
+            "annotationLevel": "",
+            "recommendation": {
+                "message": ""
+            }
+        },
+        {
+            "services": [
+                "service-f"
+            ],
+            "operations": null,
+            "initiatingOperation": "",
+            "message": "Service service-f has 1 dependents and 1 dependencies",
+            "annotationType": "CRITICALITY",
+            "yChartLevel": "SERVICE",
+            "annotationLevel": "",
+            "recommendation": {
+                "message": ""
+            }
+        },
+        {
+            "services": [
+                "service-i"
+            ],
+            "operations": null,
+            "initiatingOperation": "",
+            "message": "Service service-i has 1 dependents and 2 dependencies",
+            "annotationType": "CRITICALITY",
+            "yChartLevel": "SERVICE",
+            "annotationLevel": "",
+            "recommendation": {
+                "message": ""
+            }
+        },
+        {
+            "services": [
+                "service-f"
+            ],
+            "operations": null,
+            "initiatingOperation": "",
+            "message": "Service service-f has 1 dependencies",
+            "annotationType": "DEPENDENCE",
+            "yChartLevel": "SERVICE",
+            "annotationLevel": "",
+            "recommendation": {
+                "message": ""
+            }
+        },
+        {
+            "services": [
+                "service-f/op2-subop2"
+            ],
+            "operations": null,
+            "initiatingOperation": "",
+            "message": "Service service-f/op2-subop2 has 1 dependencies",
+            "annotationType": "DEPENDENCE",
+            "yChartLevel": "SERVICE",
+            "annotationLevel": "",
+            "recommendation": {
+                "message": ""
+            }
+        },
+        {
+            "services": [
+                "service-e"
+            ],
+            "operations": null,
+            "initiatingOperation": "",
+            "message": "Service service-e has 2 dependencies",
+            "annotationType": "DEPENDENCE",
+            "yChartLevel": "SERVICE",
+            "annotationLevel": "",
+            "recommendation": {
+                "message": ""
+            }
+        }
+    ],
+    "services": {
+        "api-gateway": {
+            "name": "api-gateway",
+            "dependents": [
+                "service-a",
+                "service-f",
+                "service-l",
+                "service-i"
+            ],
+            "dependencies": null,
+            "cpu": {
+                "quantile": 0.54,
+                "mean": 0.23,
+                "stdev": 0.0022
+            },
+            "memory": {
+                "quantile": 0.27,
+                "mean": 0.23,
+                "stdev": 0
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "service-a": {
+            "name": "service-a",
+            "dependents": [
+                "service-c",
+                "service-b"
+            ],
+            "dependencies": [
+                "api-gateway"
+            ],
+            "cpu": {
+                "quantile": 0.45,
+                "mean": 0.23,
+                "stdev": 0.0024
+            },
+            "memory": {
+                "quantile": 0.19,
+                "mean": 0.16,
+                "stdev": 0
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "service-b/service-d/service-c": {
+            "name": "service-b/service-d/service-c",
+            "dependents": null,
+            "dependencies": null,
+            "cpu": {
+                "quantile": 0.42,
+                "mean": 0.38,
+                "stdev": 0.0057
+            },
+            "memory": {
+                "quantile": 0.41000000000000003,
+                "mean": 0.26,
+                "stdev": 0.0031999999999999997
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "service-e": {
+            "name": "service-e",
+            "dependents": null,
+            "dependencies": [
+                "service-d",
+                "service-b"
+            ],
+            "cpu": {
+                "quantile": 0.24,
+                "mean": 0.2,
+                "stdev": 0.0005
+            },
+            "memory": {
+                "quantile": 0.15,
+                "mean": 0.1,
+                "stdev": 0.0001
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "service-f": {
+            "name": "service-f",
+            "dependents": [
+                "api-gateway"
+            ],
+            "dependencies": [
+                "service-g"
+            ],
+            "cpu": {
+                "quantile": 0.275,
+                "mean": 0.185,
+                "stdev": 0.00085
+            },
+            "memory": {
+                "quantile": 0.19,
+                "mean": 0.16,
+                "stdev": 0.00025
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "service-f/op2-subop2": {
+            "name": "service-f/op2-subop2",
+            "dependents": [
+                "api-gateway"
+            ],
+            "dependencies": [
+                "service-h"
+            ],
+            "cpu": {
+                "quantile": 0.275,
+                "mean": 0.185,
+                "stdev": 0.00085
+            },
+            "memory": {
+                "quantile": 0.19,
+                "mean": 0.16,
+                "stdev": 0.00025
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "service-g": {
+            "name": "service-g",
+            "dependents": null,
+            "dependencies": [
+                "service-f"
+            ],
+            "cpu": {
+                "quantile": 0.25,
+                "mean": 0.17,
+                "stdev": 0.0003
+            },
+            "memory": {
+                "quantile": 0.04,
+                "mean": 0.03,
+                "stdev": 0
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "service-h": {
+            "name": "service-h",
+            "dependents": null,
+            "dependencies": [
+                "service-f"
+            ],
+            "cpu": {
+                "quantile": 0.14,
+                "mean": 0.12,
+                "stdev": 0.0007
+            },
+            "memory": {
+                "quantile": 0.33,
+                "mean": 0.28,
+                "stdev": 0.0002
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "service-i": {
+            "name": "service-i",
+            "dependents": [
+                "service-j"
+            ],
+            "dependencies": [
+                "service-k",
+                "api-gateway"
+            ],
+            "cpu": {
+                "quantile": 0.08,
+                "mean": 0.05,
+                "stdev": 0.0007
+            },
+            "memory": {
+                "quantile": 0.21,
+                "mean": 0.17,
+                "stdev": 0.0002
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "service-j": {
+            "name": "service-j",
+            "dependents": [
+                "service-k"
+            ],
+            "dependencies": [
+                "service-i"
+            ],
+            "cpu": {
+                "quantile": 0.09,
+                "mean": 0.06,
+                "stdev": 0.0007
+            },
+            "memory": {
+                "quantile": 0.1,
+                "mean": 0.3,
+                "stdev": 0.0002
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "service-k": {
+            "name": "service-k",
+            "dependents": [
+                "service-i"
+            ],
+            "dependencies": [
+                "service-j"
+            ],
+            "cpu": {
+                "quantile": 0.09,
+                "mean": 0.06,
+                "stdev": 0.0007
+            },
+            "memory": {
+                "quantile": 0.1,
+                "mean": 0.3,
+                "stdev": 0.0002
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "service-l/service-m": {
+            "name": "service-l/service-m",
+            "dependents": [],
+            "dependencies": [
+                "api-gateway"
+            ],
+            "cpu": {
+                "quantile": 0.13,
+                "mean": 0.08,
+                "stdev": 0.0014
+            },
+            "memory": {
+                "quantile": 0.12,
+                "mean": 0.06999999999999999,
+                "stdev": 0.0004
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        }
+    },
+    "operations": {
+        "operation-cyclic": {
+            "op3-subop1": {
+                "from": "api-gateway",
+                "to": "service-i",
+                "count": 1
+            },
+            "op3-subop2": {
+                "from": "service-i",
+                "to": "service-j",
+                "count": 1
+            },
+            "op3-subop3": {
+                "from": "service-j",
+                "to": "service-k",
+                "count": 1
+            }
+        },
+        "operation-greedy": {
+            "op4-subop1": {
+                "from": "api-gateway",
+                "to": "service-l/service-m",
+                "count": 1
+            }
+        },
+        "operation-inappropriate-intimacy": {
+            "op1-subop1": {
+                "from": "api-gateway",
+                "to": "service-a",
+                "count": 1
+            },
+            "op1-subop2/op1-subop3": {
+                "from": "service-a",
+                "to": "service-b/service-d/service-c",
+                "count": 1
+            },
+            "op1-subop4/op1-subop6": {
+                "from": "service-b/service-d/service-c",
+                "to": "service-e",
+                "count": 1
+            }
+        },
+        "operation-megaservice": {
+            "op2-subop1": {
+                "from": "api-gateway",
+                "to": "service-f",
+                "count": 1
+            },
+            "op2-subop2": {
+                "from": "api-gateway",
+                "to": "service-f/op2-subop2",
+                "count": 1
+            },
+            "op2-subop3": {
+                "from": "service-f",
+                "to": "service-g",
+                "count": 1
+            },
+            "op2-subop4": {
+                "from": "service-f/op2-subop2",
+                "to": "service-h",
+                "count": 1
+            }
+        }
+    }
+}

@@ -1,0 +1,678 @@
+{
+    "annotations": [
+        {
+            "services": [
+                "user-service"
+            ],
+            "operations": [
+                "b3270dcd86ed269c"
+            ],
+            "initiatingOperation": "/wrk2-api/post/compose",
+            "message": "Service user-service, only has a single operation ([{/wrk2-api/post/compose b3270dcd86ed269c}]). Potential Greedy service as utils are under requirements.",
+            "annotationType": "GREEDY",
+            "yChartLevel": "",
+            "annotationLevel": "INFO",
+            "recommendation": {
+                "message": ""
+            }
+        },
+        {
+            "services": [
+                "user-mention-service"
+            ],
+            "operations": [
+                "786302faf479cadd"
+            ],
+            "initiatingOperation": "/wrk2-api/post/compose",
+            "message": "Service user-mention-service, only has a single operation ([{/wrk2-api/post/compose 786302faf479cadd}]). Potential Greedy service as utils are under requirements.",
+            "annotationType": "GREEDY",
+            "yChartLevel": "",
+            "annotationLevel": "INFO",
+            "recommendation": {
+                "message": ""
+            }
+        },
+        {
+            "services": [
+                "social-graph-service"
+            ],
+            "operations": [
+                "9bf9954db8caf03c"
+            ],
+            "initiatingOperation": "/wrk2-api/post/compose",
+            "message": "Service social-graph-service, only has a single operation ([{/wrk2-api/post/compose 9bf9954db8caf03c}]). Potential Greedy service as utils are under requirements.",
+            "annotationType": "GREEDY",
+            "yChartLevel": "",
+            "annotationLevel": "INFO",
+            "recommendation": {
+                "message": ""
+            }
+        },
+        {
+            "services": [
+                "url-shorten-service"
+            ],
+            "operations": [
+                "8b99dfcdfef69147"
+            ],
+            "initiatingOperation": "/wrk2-api/post/compose",
+            "message": "Service url-shorten-service, only has a single operation ([{/wrk2-api/post/compose 8b99dfcdfef69147}]). Potential Greedy service as utils are under requirements.",
+            "annotationType": "GREEDY",
+            "yChartLevel": "",
+            "annotationLevel": "INFO",
+            "recommendation": {
+                "message": ""
+            }
+        },
+        {
+            "services": [
+                "media-service"
+            ],
+            "operations": [
+                "dd98e6e20547e64b"
+            ],
+            "initiatingOperation": "/wrk2-api/post/compose",
+            "message": "Service media-service, only has a single operation ([{/wrk2-api/post/compose dd98e6e20547e64b}]). Potential Greedy service as utils are under requirements.",
+            "annotationType": "GREEDY",
+            "yChartLevel": "",
+            "annotationLevel": "INFO",
+            "recommendation": {
+                "message": ""
+            }
+        },
+        {
+            "services": [
+                "unique-id-service"
+            ],
+            "operations": [
+                "1e3b94709f0bd491"
+            ],
+            "initiatingOperation": "/wrk2-api/post/compose",
+            "message": "Service unique-id-service, only has a single operation ([{/wrk2-api/post/compose 1e3b94709f0bd491}]). Potential Greedy service as utils are under requirements.",
+            "annotationType": "GREEDY",
+            "yChartLevel": "",
+            "annotationLevel": "INFO",
+            "recommendation": {
+                "message": ""
+            }
+        }
+    ],
+    "services": {
+        "compose-post-service": {
+            "name": "compose-post-service",
+            "dependents": [
+                "text-service",
+                "home-timeline-service",
+                "unique-id-service",
+                "user-service",
+                "user-timeline-service",
+                "post-storage-service",
+                "media-service"
+            ],
+            "dependencies": [
+                "nginx-web-server"
+            ],
+            "cpu": {
+                "quantile": 5.226844572228631,
+                "mean": 0.3253584883297682,
+                "stdev": 0.011825725510289011
+            },
+            "memory": {
+                "quantile": 0.04894183398842573,
+                "mean": 0.03144341748122431,
+                "stdev": 0.000049174731170414715
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "home-timeline-service": {
+            "name": "home-timeline-service",
+            "dependents": [
+                "post-storage-service",
+                "social-graph-service"
+            ],
+            "dependencies": [
+                "compose-post-service",
+                "nginx-web-server"
+            ],
+            "cpu": {
+                "quantile": 1.2100887373571547,
+                "mean": 0.12523010320716813,
+                "stdev": 0.003153568864544938
+            },
+            "memory": {
+                "quantile": 0.033126085148071735,
+                "mean": 0.02947774971402505,
+                "stdev": 0.000005557906235183556
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "media-service": {
+            "name": "media-service",
+            "dependents": null,
+            "dependencies": [
+                "compose-post-service"
+            ],
+            "cpu": {
+                "quantile": 0.4235486971646283,
+                "mean": 0.027064412142217956,
+                "stdev": 0.000959422046860241
+            },
+            "memory": {
+                "quantile": 0.019089348686106945,
+                "mean": 0.018854215995707878,
+                "stdev": 6.361886509873289e-7
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "nginx-web-server": {
+            "name": "nginx-web-server",
+            "dependents": [
+                "home-timeline-service",
+                "compose-post-service",
+                "user-timeline-service"
+            ],
+            "dependencies": null,
+            "cpu": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            },
+            "memory": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "post-storage-service": {
+            "name": "post-storage-service",
+            "dependents": null,
+            "dependencies": [
+                "compose-post-service",
+                "home-timeline-service",
+                "user-timeline-service"
+            ],
+            "cpu": {
+                "quantile": 0.8060271467011921,
+                "mean": 0.08061649059968679,
+                "stdev": 0.0020045622652391315
+            },
+            "memory": {
+                "quantile": 0.030103072906308648,
+                "mean": 0.029278431936733133,
+                "stdev": 0.0000012640656208267278
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "social-graph-service": {
+            "name": "social-graph-service",
+            "dependents": null,
+            "dependencies": [
+                "home-timeline-service"
+            ],
+            "cpu": {
+                "quantile": 1.4224701395185884,
+                "mean": 0.09040039827991915,
+                "stdev": 0.003149819590913871
+            },
+            "memory": {
+                "quantile": 0.031495318480883674,
+                "mean": 0.031315210473434975,
+                "stdev": 3.1132587142341893e-7
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "text-service": {
+            "name": "text-service",
+            "dependents": [
+                "user-mention-service",
+                "url-shorten-service"
+            ],
+            "dependencies": [
+                "compose-post-service"
+            ],
+            "cpu": {
+                "quantile": 2.4406558812715278,
+                "mean": 0.1542496551469893,
+                "stdev": 0.005548043223922335
+            },
+            "memory": {
+                "quantile": 0.05701496853928496,
+                "mean": 0.05644300541507732,
+                "stdev": 9.264689761134032e-7
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "unique-id-service": {
+            "name": "unique-id-service",
+            "dependents": null,
+            "dependencies": [
+                "compose-post-service"
+            ],
+            "cpu": {
+                "quantile": 0.425536709763491,
+                "mean": 0.027638236940882605,
+                "stdev": 0.0009812216694239362
+            },
+            "memory": {
+                "quantile": 0.018418986942949342,
+                "mean": 0.018211623786626104,
+                "stdev": 5.138792519062936e-7
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "url-shorten-service": {
+            "name": "url-shorten-service",
+            "dependents": null,
+            "dependencies": [
+                "text-service"
+            ],
+            "cpu": {
+                "quantile": 1.4005812057364773,
+                "mean": 0.09307004649951428,
+                "stdev": 0.0032142795190027336
+            },
+            "memory": {
+                "quantile": 0.026740410714679037,
+                "mean": 0.0259429735073636,
+                "stdev": 0.0000011243360266568592
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "user-mention-service": {
+            "name": "user-mention-service",
+            "dependents": null,
+            "dependencies": [
+                "text-service"
+            ],
+            "cpu": {
+                "quantile": 1.5435139356989243,
+                "mean": 0.10140280370238293,
+                "stdev": 0.0035197337495278236
+            },
+            "memory": {
+                "quantile": 0.02763275796078512,
+                "mean": 0.026501478529150344,
+                "stdev": 0.0000016557949781532879
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "user-service": {
+            "name": "user-service",
+            "dependents": null,
+            "dependencies": [
+                "compose-post-service"
+            ],
+            "cpu": {
+                "quantile": 0.4414438465994154,
+                "mean": 0.031474138380442974,
+                "stdev": 0.0009960316061391695
+            },
+            "memory": {
+                "quantile": 0.028622339581636812,
+                "mean": 0.02839655458355871,
+                "stdev": 4.987808215234723e-7
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        },
+        "user-timeline-service": {
+            "name": "user-timeline-service",
+            "dependents": [
+                "post-storage-service"
+            ],
+            "dependencies": [
+                "compose-post-service",
+                "nginx-web-server"
+            ],
+            "cpu": {
+                "quantile": 1.1121015321927747,
+                "mean": 0.07310633939724612,
+                "stdev": 0.0025226504961267703
+            },
+            "memory": {
+                "quantile": 0.1302938706272064,
+                "mean": 0.13008417638719091,
+                "stdev": 4.2835546271198816e-7
+            },
+            "network": {
+                "quantile": 0,
+                "mean": 0,
+                "stdev": 0
+            }
+        }
+    },
+    "operations": {
+        "/wrk2-api/home-timeline/read": {
+            "06b1dfa7895effd6": {
+                "from": "home-timeline-service",
+                "to": "home-timeline-service",
+                "count": 2,
+                "name": "read_home_timeline_redis_find_client"
+            },
+            "11530e494d8e0273": {
+                "from": "nginx-web-server",
+                "to": "nginx-web-server",
+                "count": 1,
+                "name": "/wrk2-api/home-timeline/read"
+            },
+            "12ee38488812b240": {
+                "from": "home-timeline-service",
+                "to": "post-storage-service",
+                "count": 2,
+                "name": "post_storage_read_posts_server"
+            },
+            "62fd0f7495963bd4": {
+                "from": "nginx-web-server",
+                "to": "nginx-web-server",
+                "count": 2,
+                "name": "read_home_timeline_client"
+            },
+            "6b08825aedce35f7": {
+                "from": "nginx-web-server",
+                "to": "home-timeline-service",
+                "count": 2,
+                "name": "read_home_timeline_server"
+            },
+            "fb971b2827a88ad0": {
+                "from": "nginx-web-server",
+                "to": "nginx-web-server",
+                "count": 2,
+                "name": "/wrk2-api/home-timeline/read"
+            }
+        },
+        "/wrk2-api/post/compose": {
+            "091531987da9b6a6": {
+                "from": "compose-post-service",
+                "to": "compose-post-service",
+                "count": 2,
+                "name": "compose_creator_client"
+            },
+            "1111f2f887bc6449": {
+                "from": "user-mention-service",
+                "to": "user-mention-service",
+                "count": 2,
+                "name": "compose_user_mentions_memcached_get_client"
+            },
+            "17f79f23c075d431": {
+                "from": "compose-post-service",
+                "to": "compose-post-service",
+                "count": 2,
+                "name": "write_home_timeline_client"
+            },
+            "1b028b18e17025d6": {
+                "from": "user-mention-service",
+                "to": "user-mention-service",
+                "count": 2,
+                "name": "compose_user_mentions_mongo_find_client"
+            },
+            "1e3b94709f0bd491": {
+                "from": "compose-post-service",
+                "to": "unique-id-service",
+                "count": 2,
+                "name": "compose_unique_id_server"
+            },
+            "21ff70d31b633c0e": {
+                "from": "user-timeline-service",
+                "to": "user-timeline-service",
+                "count": 2,
+                "name": "write_user_timeline_mongo_insert_client"
+            },
+            "2dfbac40544cc866": {
+                "from": "nginx-web-server",
+                "to": "nginx-web-server",
+                "count": 1,
+                "name": "/wrk2-api/post/compose"
+            },
+            "303feba67854d87a": {
+                "from": "text-service",
+                "to": "text-service",
+                "count": 2,
+                "name": "compose_urls_client"
+            },
+            "3ef3dba5d38da259": {
+                "from": "post-storage-service",
+                "to": "post-storage-service",
+                "count": 2,
+                "name": "post_storage_mongo_insert_client"
+            },
+            "5e3d4fd5883b1ff5": {
+                "from": "compose-post-service",
+                "to": "compose-post-service",
+                "count": 2,
+                "name": "write_user_timeline_client"
+            },
+            "60d5fbc79ba8a104": {
+                "from": "compose-post-service",
+                "to": "compose-post-service",
+                "count": 2,
+                "name": "compose_unique_id_client"
+            },
+            "635a8c0f3a0f3403": {
+                "from": "compose-post-service",
+                "to": "home-timeline-service",
+                "count": 2,
+                "name": "write_home_timeline_server"
+            },
+            "6c3698600782ef4e": {
+                "from": "compose-post-service",
+                "to": "text-service",
+                "count": 2,
+                "name": "compose_text_server"
+            },
+            "786302faf479cadd": {
+                "from": "text-service",
+                "to": "user-mention-service",
+                "count": 2,
+                "name": "compose_user_mentions_server"
+            },
+            "7e7726993e00f344": {
+                "from": "compose-post-service",
+                "to": "compose-post-service",
+                "count": 2,
+                "name": "store_post_client"
+            },
+            "8aba43f7f617ca18": {
+                "from": "social-graph-service",
+                "to": "social-graph-service",
+                "count": 2,
+                "name": "social_graph_redis_get_client"
+            },
+            "8b99dfcdfef69147": {
+                "from": "text-service",
+                "to": "url-shorten-service",
+                "count": 2,
+                "name": "compose_urls_server"
+            },
+            "8ce5b36ff331d3d5": {
+                "from": "compose-post-service",
+                "to": "compose-post-service",
+                "count": 2,
+                "name": "compose_media_client"
+            },
+            "9415a8665a7d22a2": {
+                "from": "nginx-web-server",
+                "to": "nginx-web-server",
+                "count": 2,
+                "name": "/wrk2-api/post/compose"
+            },
+            "9bf9954db8caf03c": {
+                "from": "home-timeline-service",
+                "to": "social-graph-service",
+                "count": 2,
+                "name": "get_followers_server"
+            },
+            "a09a2725d0d7e949": {
+                "from": "user-timeline-service",
+                "to": "user-timeline-service",
+                "count": 2,
+                "name": "write_user_timeline_redis_update_client"
+            },
+            "b3270dcd86ed269c": {
+                "from": "compose-post-service",
+                "to": "user-service",
+                "count": 2,
+                "name": "compose_creator_server"
+            },
+            "b8b2b1d516c82f4f": {
+                "from": "compose-post-service",
+                "to": "user-timeline-service",
+                "count": 2,
+                "name": "write_user_timeline_server"
+            },
+            "c7aaf77325a48795": {
+                "from": "nginx-web-server",
+                "to": "nginx-web-server",
+                "count": 2,
+                "name": "compose_post_client"
+            },
+            "d2f826ba0684eda7": {
+                "from": "home-timeline-service",
+                "to": "home-timeline-service",
+                "count": 2,
+                "name": "write_home_timeline_redis_update_client"
+            },
+            "d5caafc18d5ef079": {
+                "from": "nginx-web-server",
+                "to": "compose-post-service",
+                "count": 2,
+                "name": "compose_post_server"
+            },
+            "dd98e6e20547e64b": {
+                "from": "compose-post-service",
+                "to": "media-service",
+                "count": 2,
+                "name": "compose_media_server"
+            },
+            "df9cb7f549781038": {
+                "from": "home-timeline-service",
+                "to": "home-timeline-service",
+                "count": 2,
+                "name": "get_followers_client"
+            },
+            "e0c735ca51afaa4f": {
+                "from": "url-shorten-service",
+                "to": "url-shorten-service",
+                "count": 2,
+                "name": "url_mongo_insert_client"
+            },
+            "ec747c239466e85d": {
+                "from": "compose-post-service",
+                "to": "compose-post-service",
+                "count": 2,
+                "name": "compose_text_client"
+            },
+            "ef9939cd3d6f63c4": {
+                "from": "compose-post-service",
+                "to": "post-storage-service",
+                "count": 2,
+                "name": "store_post_server"
+            },
+            "f88fe36a83c8194e": {
+                "from": "social-graph-service",
+                "to": "social-graph-service",
+                "count": 2,
+                "name": "social_graph_mongo_find_client"
+            },
+            "fa3518f7ffad4c4d": {
+                "from": "text-service",
+                "to": "text-service",
+                "count": 2,
+                "name": "compose_user_mentions_client"
+            }
+        },
+        "/wrk2-api/user-timeline/read": {
+            "11d041bff6e82cf3": {
+                "from": "user-timeline-service",
+                "to": "user-timeline-service",
+                "count": 2,
+                "name": "read_user_timeline_redis_find_client"
+            },
+            "14be4c37f000ebf8": {
+                "from": "nginx-web-server",
+                "to": "nginx-web-server",
+                "count": 1,
+                "name": "/wrk2-api/user-timeline/read"
+            },
+            "289506be9c9627f6": {
+                "from": "user-timeline-service",
+                "to": "post-storage-service",
+                "count": 2,
+                "name": "post_storage_read_posts_server"
+            },
+            "35dd8063c67642c5": {
+                "from": "user-timeline-service",
+                "to": "user-timeline-service",
+                "count": 2,
+                "name": "user_timeline_mongo_find_client"
+            },
+            "8e674bf5308c0637": {
+                "from": "nginx-web-server",
+                "to": "user-timeline-service",
+                "count": 2,
+                "name": "read_user_timeline_server"
+            },
+            "c2b31f73b30f4acf": {
+                "from": "nginx-web-server",
+                "to": "nginx-web-server",
+                "count": 2,
+                "name": "/wrk2-api/user-timeline/read"
+            },
+            "cd50e9d7e8f0e303": {
+                "from": "nginx-web-server",
+                "to": "nginx-web-server",
+                "count": 2,
+                "name": "ReadUserTimeline"
+            },
+            "d2a8765a8f9a5eed": {
+                "from": "user-timeline-service",
+                "to": "user-timeline-service",
+                "count": 2,
+                "name": "user_timeline_redis_update_client"
+            }
+        }
+    }
+}

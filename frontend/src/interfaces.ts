@@ -13,6 +13,7 @@ export interface IOperation {
 }
 
 export interface IEdge {
+    name: string;
     from: string;
     to: string;
     count: number;
