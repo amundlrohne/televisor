@@ -29,7 +29,7 @@ const ServiceNode = ({ data }: IProps) => {
         }}
       >
         <p style={{ textAlign: "center", margin: "0" }}>{data.label}</p>
-        <table>
+        <table style={{ flex: "row", width: "100%", textAlign: "left" }}>
           <tr>
             <th></th>
             <th>Mean</th>

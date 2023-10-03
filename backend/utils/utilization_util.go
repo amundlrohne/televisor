@@ -26,3 +26,19 @@ func SumUtilizations(utils ...models.Utilization) models.Utilization {
 	}
 	return result
 }
+
+func SumCPUUtilizations(services ...models.TelevisorService) models.Utilization {
+	result := models.Utilization{}
+	for _, u := range services {
+		result = AddUtilizations(result, u.Cpu)
+	}
+	return result
+}
+
+func SumMemoryUtilizations(services ...models.TelevisorService) models.Utilization {
+	result := models.Utilization{}
+	for _, u := range services {
+		result = AddUtilizations(result, u.Memory)
+	}
+	return result
+}
