@@ -17,6 +17,7 @@ import (
 
 var (
 	jaeger_addr = flag.String("jaeger_addr", "localhost:16685", "jaeger address to connect to")
+    prom_addr   = flag.String("prom_addr", "http://localhost:9090", "prometheus address to connect to")
 	api_gateway = flag.String("api_gateway", "nginx-web-server", "api gateway in microservice application")
 	cpu_req     = flag.Float64("cpu_req", 0.6, "cpu utilization requirement")
 	mem_req     = flag.Float64("mem_req", 0.2, "memory utilization requirement")
@@ -81,13 +82,13 @@ func retrieveTelemetry() (models.Operations, map[string]models.TelevisorService)
 
 	qsc := pb.NewQueryServiceClient(&conn)
 
-	cpuUtilsQuantile := queries.PrometheusContainerCPUQuantile()
-	cpuUtilsMean := queries.PrometheusContainerCPUMean()
-	cpuUtilsStdev := queries.PrometheusContainerCPUStdev()
+	cpuUtilsQuantile := queries.PrometheusContainerCPUQuantile(*prom_addr)
+	cpuUtilsMean := queries.PrometheusContainerCPUMean(*prom_addr)
+	cpuUtilsStdev := queries.PrometheusContainerCPUStdev(*prom_addr)
 
-	memoryUtilsQuantile := queries.PrometheusContainerMemoryQuantile()
-	memoryUtilsMean := queries.PrometheusContainerMemoryMean()
-	memoryUtilsStdev := queries.PrometheusContainerMemoryStdev()
+	memoryUtilsQuantile := queries.PrometheusContainerMemoryQuantile(*prom_addr)
+	memoryUtilsMean := queries.PrometheusContainerMemoryMean(*prom_addr)
+	memoryUtilsStdev := queries.PrometheusContainerMemoryStdev(*prom_addr)
 
 	// networkInUtils := queries.PrometheusContainerNetworkInput()
 	// networkOutUtils := queries.PrometheusContainerNetworkOutput()

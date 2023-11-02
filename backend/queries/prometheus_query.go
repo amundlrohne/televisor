@@ -11,8 +11,8 @@ import (
 	"github.com/amundlrohne/televisor/models"
 )
 
-func prometheusQuery(query string) []byte {
-	res, err := http.Get("http://localhost:9090/api/v1/query?query=" + url.PathEscape(query))
+func prometheusQuery(addr string, query string) []byte {
+	res, err := http.Get(addr + "/api/v1/query?query=" + url.PathEscape(query))
 	if err != nil {
 		fmt.Printf("error making http request: %s\n", err)
 		os.Exit(1)
@@ -27,10 +27,10 @@ func prometheusQuery(query string) []byte {
 	return resBody
 }
 
-func PrometheusContainerCPUQuantile() models.PrometheusContainerMetric {
+func PrometheusContainerCPUQuantile(addr string) models.PrometheusContainerMetric {
 	const quantile = `sum(quantile_over_time(0.997, rate(container_cpu_usage_seconds_total[30s])[1h:]) * 100) by (name)`
 
-	response := prometheusQuery(quantile)
+	response := prometheusQuery(addr, quantile)
 
 	var promResult models.PrometheusAPIResponse
 	json.Unmarshal(response, &promResult)
@@ -38,10 +38,10 @@ func PrometheusContainerCPUQuantile() models.PrometheusContainerMetric {
 	return convertApiResponseToMap(promResult)
 }
 
-func PrometheusContainerCPUStdev() models.PrometheusContainerMetric {
+func PrometheusContainerCPUStdev(addr string) models.PrometheusContainerMetric {
 	const std = `sum(stddev_over_time(rate(container_cpu_usage_seconds_total[30s])[1h:])) by (name)`
 
-	response := prometheusQuery(std)
+	response := prometheusQuery(addr, std)
 
 	var promResult models.PrometheusAPIResponse
 	json.Unmarshal(response, &promResult)
@@ -49,10 +49,10 @@ func PrometheusContainerCPUStdev() models.PrometheusContainerMetric {
 	return convertApiResponseToMap(promResult)
 }
 
-func PrometheusContainerCPUMean() models.PrometheusContainerMetric {
+func PrometheusContainerCPUMean(addr string) models.PrometheusContainerMetric {
 	const mean = `sum(avg_over_time(rate(container_cpu_usage_seconds_total[30s])[1h:]) * 100) by (name)`
 
-	response := prometheusQuery(mean)
+	response := prometheusQuery(addr, mean)
 
 	var promResult models.PrometheusAPIResponse
 	json.Unmarshal(response, &promResult)
@@ -60,10 +60,10 @@ func PrometheusContainerCPUMean() models.PrometheusContainerMetric {
 	return convertApiResponseToMap(promResult)
 }
 
-func PrometheusContainerMemoryQuantile() models.PrometheusContainerMetric {
+func PrometheusContainerMemoryQuantile(addr string) models.PrometheusContainerMetric {
 	const quantile = `sum by (name) ((quantile_over_time(0.997, container_memory_usage_bytes[1h]) / on() group_left() machine_memory_bytes) * 100)`
 
-	response := prometheusQuery(quantile)
+	response := prometheusQuery(addr, quantile)
 
 	var promResult models.PrometheusAPIResponse
 	json.Unmarshal(response, &promResult)
@@ -71,10 +71,10 @@ func PrometheusContainerMemoryQuantile() models.PrometheusContainerMetric {
 	return convertApiResponseToMap(promResult)
 }
 
-func PrometheusContainerMemoryStdev() models.PrometheusContainerMetric {
+func PrometheusContainerMemoryStdev(addr string) models.PrometheusContainerMetric {
 	const stdev = `sum by (name) (stddev_over_time(container_memory_usage_bytes[1h]) / on() group_left() machine_memory_bytes)`
 
-	response := prometheusQuery(stdev)
+	response := prometheusQuery(addr, stdev)
 
 	var promResult models.PrometheusAPIResponse
 	json.Unmarshal(response, &promResult)
@@ -82,10 +82,10 @@ func PrometheusContainerMemoryStdev() models.PrometheusContainerMetric {
 	return convertApiResponseToMap(promResult)
 }
 
-func PrometheusContainerMemoryMean() models.PrometheusContainerMetric {
+func PrometheusContainerMemoryMean(addr string) models.PrometheusContainerMetric {
 	const mean = `sum by (name) ((avg_over_time(container_memory_usage_bytes[1h]) / on() group_left() machine_memory_bytes) * 100)`
 
-	response := prometheusQuery(mean)
+	response := prometheusQuery(addr, mean)
 
 	var promResult models.PrometheusAPIResponse
 	json.Unmarshal(response, &promResult)
@@ -93,9 +93,9 @@ func PrometheusContainerMemoryMean() models.PrometheusContainerMetric {
 	return convertApiResponseToMap(promResult)
 }
 
-func PrometheusContainerNetworkOutput() models.PrometheusContainerMetric {
+func PrometheusContainerNetworkOutput(addr string) models.PrometheusContainerMetric {
 	const query = `sum by(name) (podman_container_info{name!~".+infra"} * on(id) group_right(name) rate(podman_container_net_output_total[15s]) / 1024)`
-	response := prometheusQuery(query)
+	response := prometheusQuery(addr, query)
 
 	var promResult models.PrometheusAPIResponse
 	json.Unmarshal(response, &promResult)
@@ -103,9 +103,9 @@ func PrometheusContainerNetworkOutput() models.PrometheusContainerMetric {
 	return convertApiResponseToMap(promResult)
 }
 
-func PrometheusContainerNetworkInput() models.PrometheusContainerMetric {
+func PrometheusContainerNetworkInput(addr string) models.PrometheusContainerMetric {
 	const query = `sum by(name) (podman_container_info{name!~".+infra"} * on(id) group_right(name) rate(podman_container_net_input_total[15s]) / 1024)`
-	response := prometheusQuery(query)
+	response := prometheusQuery(addr, query)
 
 	var promResult models.PrometheusAPIResponse
 	json.Unmarshal(response, &promResult)
