@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 	"testing"
 
@@ -133,6 +132,14 @@ func TestPrintToJSON(t *testing.T) {
 
 func TestRecommendationEngine(t *testing.T) {
 	for i, a := range annotations {
+		if a.AnnotationType == models.InappropriateIntimacy {
+			services, operations, annotations[i] = recommenders.InappropriateIntimacyRecommender(services, operations, a)
+		}
+	}
+
+	annotations = Analyze(operations, services)
+
+    for i, a := range annotations {
 		if a.AnnotationType == models.Megaservice {
 			services, operations, annotations[i] = recommenders.MegaserviceRecommender(services, operations, a)
 		}
@@ -141,16 +148,8 @@ func TestRecommendationEngine(t *testing.T) {
 	annotations = Analyze(operations, services)
 
 	for i, a := range annotations {
-		if a.AnnotationType == models.InappropriateIntimacy {
-			services, operations, annotations[i] = recommenders.InappropriateIntimacyRecommender(services, operations, a)
-		}
-	}
-
-	annotations = Analyze(operations, services)
-
-	for i, a := range annotations {
 		if a.AnnotationType == models.Greedy {
-			services, operations, annotations[i] = recommenders.GreedyServiceRecommender(services, operations, a)
+			services, operations, annotations[i] = recommenders.NewGreedyServiceRecommender(services, operations, a)
 		}
 	}
 

@@ -37,15 +37,6 @@ func InappropriateIntimacyServiceAnnotatorV2(request models.Operation) []string 
         }
     }
 
-    for d := range divergingNodes {
-        for c := range convergingNodes {
-            if d == c {
-                delete(divergingNodes, d)
-                delete(convergingNodes, c)
-            }
-        }
-    }
-
     var dag []models.OperationEdge
 
     for _, r := range request {
@@ -103,18 +94,17 @@ func servicesBetween(from string, to string, dag []models.OperationEdge) []strin
 
         for i := 0; i < len(sorted); i++ {
             if sorted[i] == from {
-                sorted = sorted[i:]
+                sorted = sorted[i+1:]
                 break
             }
         }
 
         for i := len(sorted) - 1; i >= 0; i-- {
             if sorted[i] == to {
-                sorted = sorted[:i+1]
+                sorted = sorted[:i]
                 break
             }
         }
-
         return sorted
     }
 

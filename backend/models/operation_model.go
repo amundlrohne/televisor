@@ -82,6 +82,7 @@ func (operation Operation) AddEdge(opName string, from string, to string) {
 			From:  from,
 			To:    to,
 			Count: 1,
+            Name: opName,
 		}
 	}
 }

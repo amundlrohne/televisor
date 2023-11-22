@@ -18,6 +18,7 @@ func InappropriateIntimacyRecommender(services map[string]models.TelevisorServic
 		}
 	}
 
+
 	mergedService := models.TelevisorService{
 		Name:    servicesToBeMerged[0].Name,
 		Cpu:     servicesToBeMerged[0].Cpu,

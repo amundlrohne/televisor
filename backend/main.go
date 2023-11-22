@@ -38,16 +38,16 @@ func main() {
 
 func recommend(operations models.Operations, services map[string]models.TelevisorService, annotations []models.Annotation) {
 	for i, a := range annotations {
-		if a.AnnotationType == models.Megaservice {
-			services, operations, annotations[i] = recommenders.MegaserviceRecommender(services, operations, a)
+		if a.AnnotationType == models.InappropriateIntimacy {
+			services, operations, annotations[i] = recommenders.InappropriateIntimacyRecommender(services, operations, a)
 		}
 	}
 
 	annotations = Analyze(operations, services)
 
-	for i, a := range annotations {
-		if a.AnnotationType == models.InappropriateIntimacy {
-			services, operations, annotations[i] = recommenders.InappropriateIntimacyRecommender(services, operations, a)
+    for i, a := range annotations {
+		if a.AnnotationType == models.Megaservice {
+			services, operations, annotations[i] = recommenders.MegaserviceRecommender(services, operations, a)
 		}
 	}
 
