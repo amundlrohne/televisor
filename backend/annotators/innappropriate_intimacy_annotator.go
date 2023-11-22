@@ -6,6 +6,166 @@ import (
 	"github.com/amundlrohne/televisor/models"
 )
 
+
+func InappropriateIntimacyServiceAnnotatorV2(request models.Operation) []string {
+    var divergingNodes = make(map[string]int)
+    var convergingNodes = make(map[string]int)
+
+    for _, r := range request {
+        if i, ok := divergingNodes[r.From]; ok {
+            divergingNodes[r.From] = i + 1
+        } else {
+            divergingNodes[r.From] = 1
+        }
+
+        if i, ok := convergingNodes[r.To]; ok {
+            convergingNodes[r.To] = i + 1
+        } else {
+            convergingNodes[r.To] = 1
+        }
+    }
+
+    for d, di := range divergingNodes {
+        if di < 2 {
+            delete(divergingNodes, d)
+        }
+    }
+
+    for c, ci := range convergingNodes {
+        if ci < 2 {
+            delete(convergingNodes, c)
+        }
+    }
+
+    for d := range divergingNodes {
+        for c := range convergingNodes {
+            if d == c {
+                delete(divergingNodes, d)
+                delete(convergingNodes, c)
+            }
+        }
+    }
+
+    var dag []models.OperationEdge
+
+    for _, r := range request {
+        dag = append(dag, r)
+    }
+
+    if len(divergingNodes) > 0 && len(convergingNodes) > 0 {
+        var nodeSets [][]string
+        for d := range divergingNodes {
+            for c := range convergingNodes {
+               nodeSets = append(nodeSets, servicesBetween(d, c, dag))
+            }
+        }
+
+        //log.Printf("sets: %v", nodeSets)
+
+        var selected int
+        largest := 0
+        for i, ns := range nodeSets {
+            if len(ns) > largest {
+                largest = len(ns)
+                selected = i
+            }
+        }
+
+        return nodeSets[selected]
+    }
+
+    return []string{}
+}
+
+func servicesBetween(from string, to string, dag []models.OperationEdge) []string {
+    var edges = make(map[string][]string)
+    var counts = make(map[string]int)
+
+    for _, e := range dag {
+        edges[e.From] = append(edges[e.From], e.To)
+
+        if _, ok := counts[e.From]; !ok {
+            counts[e.From] = 0
+        }
+
+        if _, ok := counts[e.To]; !ok {
+            counts[e.To] = 1
+        } else {
+            counts[e.To] += 1
+        }
+    }
+
+    sorted := topologicalSort(edges, counts)
+    nPathsBetween := numberOfPaths(sorted, from, to, edges, counts)
+
+    if nPathsBetween > 1 {
+        //log.Printf("sorted: %v", sorted)
+
+        for i := 0; i < len(sorted); i++ {
+            if sorted[i] == from {
+                sorted = sorted[i:]
+                break
+            }
+        }
+
+        for i := len(sorted) - 1; i >= 0; i-- {
+            if sorted[i] == to {
+                sorted = sorted[:i+1]
+                break
+            }
+        }
+
+        return sorted
+    }
+
+    return []string{}
+}
+
+func topologicalSort(edges map[string][]string, counts map[string]int) []string {
+    var queue []string
+
+    for e, c := range counts {
+        if c == 0 {
+            queue = append(queue, e)
+        }
+    }
+
+    var result []string
+
+    for len(queue) > 0 {
+        u := queue[0]
+        queue = queue[1:]
+
+        result = append(result, u)
+
+        for _, c := range edges[u] {
+            counts[c] -= 1
+
+            if counts[c] == 0 {
+                queue = append(queue, c)
+            }
+        }
+
+    }
+
+    return result
+}
+
+func numberOfPaths(sorted []string, source string, destination string, edges map[string][]string, counts map[string]int) int {
+    result := make(map[string]int)
+
+    result[destination] = 1
+
+    for i := len(sorted)-1; i >= 0; i-- {
+        for _, e := range edges[sorted[i]] {
+           result[sorted[i]] += result[e]
+        }
+    }
+
+    return result[source]
+
+}
+
 func findConvergingPaths(c convergance, operation models.Operation, result ...models.OperationEdge) []models.OperationEdge {
 	//result := []models.OperationEdge{}
 
@@ -54,27 +214,46 @@ func InappropriateIntimacyServiceAnnotator(requests models.Operations, cyclicOpe
 		delete(nonReflexiveOperations, c.InitiatingOperation)
 	}
 
-	convergingServices := findConvergingServices(nonReflexiveOperations)
 
-	for req, conv := range convergingServices {
-		for _, c := range conv {
-			services := []string{}
-			for _, e := range findConvergingPaths(c, nonReflexiveOperations[req]) {
-				services = append(services, e.From)
-			}
+    for req, edges := range nonReflexiveOperations {
+        responsibleServices := InappropriateIntimacyServiceAnnotatorV2(edges)
 
-			annotations = append(annotations, models.Annotation{
-				Services:            services,
-				InitiatingOperation: req,
-				AnnotationType:      models.InappropriateIntimacy,
-				YChartLevel:         models.OperationLevel,
-				AnnotationLevel:     models.Critical,
-				Message:             fmt.Sprintf("Services: %v should be merged.", services),
-			})
-		}
-	}
+        if len(responsibleServices) > 0 {
+            annotations = append(annotations, models.Annotation{
+                Services: responsibleServices,
+                InitiatingOperation: req,
+                AnnotationType: models.InappropriateIntimacy,
+                YChartLevel: models.OperationLevel,
+                AnnotationLevel: models.Critical,
+                Message: fmt.Sprintf("Services: %v should be merged.", responsibleServices),
+            })
+        }
 
-	return annotations
+    }
+
+    return annotations
+
+//	convergingServices := findConvergingServices(nonReflexiveOperations)
+//
+//	for req, conv := range convergingServices {
+//		for _, c := range conv {
+//			services := []string{}
+//			for _, e := range findConvergingPaths(c, nonReflexiveOperations[req]) {
+//				services = append(services, e.From)
+//			}
+//
+//			annotations = append(annotations, models.Annotation{
+//				Services:            services,
+//				InitiatingOperation: req,
+//				AnnotationType:      models.InappropriateIntimacy,
+//				YChartLevel:         models.OperationLevel,
+//				AnnotationLevel:     models.Critical,
+//				Message:             fmt.Sprintf("Services: %v should be merged.", services),
+//			})
+//		}
+//	}
+//
+//	return annotations
 }
 
 func findConvergingServices(reqs models.Operations) map[string][]convergance {

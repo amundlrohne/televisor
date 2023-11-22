@@ -7,6 +7,7 @@ func OperationsGenerator() models.Operations {
 
 	operations["operation-inappropriate-intimacy"] = make(models.Operation)
 	operations["operation-megaservice"] = make(models.Operation)
+    operations["operation-media-inappropriate-intimacy"] = make(models.Operation)
 	operations["operation-cyclic"] = make(models.Operation)
 	operations["operation-greedy"] = make(models.Operation)
 
@@ -16,6 +17,21 @@ func OperationsGenerator() models.Operations {
 	operations["operation-inappropriate-intimacy"].AddEdge("op1-subop4", "service-b", "service-e")
 	operations["operation-inappropriate-intimacy"].AddEdge("op1-subop5", "service-c", "service-d")
 	operations["operation-inappropriate-intimacy"].AddEdge("op1-subop6", "service-d", "service-e")
+
+    operations["operation-media-inappropriate-intimacy"].AddEdge("media-subop1", "api-gateway", "media-1")
+    operations["operation-media-inappropriate-intimacy"].AddEdge("media-subop2", "media-1", "media-2")
+    operations["operation-media-inappropriate-intimacy"].AddEdge("media-subop3", "media-1", "media-3")
+    operations["operation-media-inappropriate-intimacy"].AddEdge("media-subop4", "media-1", "media-4")
+    operations["operation-media-inappropriate-intimacy"].AddEdge("media-subop5", "media-1", "media-5")
+    operations["operation-media-inappropriate-intimacy"].AddEdge("media-subop6", "media-2", "media-6")
+    operations["operation-media-inappropriate-intimacy"].AddEdge("media-subop7", "media-2", "media-7")
+    operations["operation-media-inappropriate-intimacy"].AddEdge("media-subop8", "media-6", "media-7")
+    operations["operation-media-inappropriate-intimacy"].AddEdge("media-subop8", "media-3", "media-7")
+    operations["operation-media-inappropriate-intimacy"].AddEdge("media-subop8", "media-4", "media-7")
+    operations["operation-media-inappropriate-intimacy"].AddEdge("media-subop8", "media-5", "media-7")
+    operations["operation-media-inappropriate-intimacy"].AddEdge("media-subop8", "media-7", "media-8")
+    operations["operation-media-inappropriate-intimacy"].AddEdge("media-subop8", "media-7", "media-9")
+    operations["operation-media-inappropriate-intimacy"].AddEdge("media-subop8", "media-7", "media-10")
 
 	operations["operation-megaservice"].AddEdge("op2-subop1", "api-gateway", "service-f")
 	operations["operation-megaservice"].AddEdge("op2-subop2", "api-gateway", "service-f")
@@ -119,6 +135,67 @@ func ServiceUtilizationGenerator(services map[string]models.TelevisorService) ma
 		r.Memory = models.Utilization{Quantile: 0.03, Mean: 0.01, Stdev: 0.0002}
 		result["service-m"] = r
 	}
+
+    if r, ok := result["media-1"]; ok {
+		r.Cpu = models.Utilization{Quantile: 0.02, Mean: 0.01, Stdev: 0.0007}
+		r.Memory = models.Utilization{Quantile: 0.03, Mean: 0.01, Stdev: 0.0002}
+		result["media-1"] = r
+	}
+    if r, ok := result["media-2"]; ok {
+        r.Cpu = models.Utilization{Quantile: 0.02, Mean: 0.01, Stdev: 0.0007}
+        r.Memory = models.Utilization{Quantile: 0.03, Mean: 0.01, Stdev: 0.0002}
+        result["media-2"] = r
+    }
+
+    if r, ok := result["media-3"]; ok {
+        r.Cpu = models.Utilization{Quantile: 0.02, Mean: 0.01, Stdev: 0.0007}
+        r.Memory = models.Utilization{Quantile: 0.03, Mean: 0.01, Stdev: 0.0002}
+        result["media-3"] = r
+    }
+
+    if r, ok := result["media-4"]; ok {
+        r.Cpu = models.Utilization{Quantile: 0.02, Mean: 0.01, Stdev: 0.0007}
+        r.Memory = models.Utilization{Quantile: 0.03, Mean: 0.01, Stdev: 0.0002}
+        result["media-4"] = r
+    }
+
+    if r, ok := result["media-5"]; ok {
+        r.Cpu = models.Utilization{Quantile: 0.02, Mean: 0.01, Stdev: 0.0007}
+        r.Memory = models.Utilization{Quantile: 0.03, Mean: 0.01, Stdev: 0.0002}
+        result["media-5"] = r
+    }
+
+    if r, ok := result["media-6"]; ok {
+        r.Cpu = models.Utilization{Quantile: 0.02, Mean: 0.01, Stdev: 0.0007}
+        r.Memory = models.Utilization{Quantile: 0.03, Mean: 0.01, Stdev: 0.0002}
+        result["media-6"] = r
+    }
+
+    if r, ok := result["media-7"]; ok {
+        r.Cpu = models.Utilization{Quantile: 0.02, Mean: 0.01, Stdev: 0.0007}
+        r.Memory = models.Utilization{Quantile: 0.03, Mean: 0.01, Stdev: 0.0002}
+        result["media-7"] = r
+    }
+
+    if r, ok := result["media-8"]; ok {
+        r.Cpu = models.Utilization{Quantile: 0.02, Mean: 0.01, Stdev: 0.0007}
+        r.Memory = models.Utilization{Quantile: 0.03, Mean: 0.01, Stdev: 0.0002}
+        result["media-8"] = r
+    }
+
+    if r, ok := result["media-9"]; ok {
+        r.Cpu = models.Utilization{Quantile: 0.02, Mean: 0.01, Stdev: 0.0007}
+        r.Memory = models.Utilization{Quantile: 0.03, Mean: 0.01, Stdev: 0.0002}
+        result["media-9"] = r
+    }
+
+    if r, ok := result["media-10"]; ok {
+        r.Cpu = models.Utilization{Quantile: 0.02, Mean: 0.01, Stdev: 0.0007}
+        r.Memory = models.Utilization{Quantile: 0.03, Mean: 0.01, Stdev: 0.0002}
+        result["media-10"] = r
+    }
+
+
 
 	return result
 }

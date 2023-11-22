@@ -2,8 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"os"
-    "testing"
+	"testing"
 
 	"github.com/amundlrohne/televisor/annotators"
 	"github.com/amundlrohne/televisor/generators"
@@ -56,8 +57,8 @@ func TestAnalyzeInappropriateIntimacyServiceAnnotator(t *testing.T) {
 
 	inappropriateIntimacy := annotators.InappropriateIntimacyServiceAnnotator(operations, cycles)
 
-	if len(inappropriateIntimacy) != 1 {
-		t.Fatalf("InappropriateIntimacyServiceAnnotator() = %v, want 1, error", len(inappropriateIntimacy))
+	if len(inappropriateIntimacy) != 2 {
+		t.Fatalf("InappropriateIntimacyServiceAnnotator() = %v, want 2, error", len(inappropriateIntimacy))
 	}
 
 	expectedServices := map[string]bool{"service-d": false, "service-b": false, "service-c": false}
